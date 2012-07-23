@@ -1,0 +1,14 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:id="@+id/ws_munday_slidingmenu_test_menu" 
+		android:layout_height="fill_parent" 
+		android:layout_width="fill_parent">
+		
+    <TextView 
+        android:id="@+id/menu_content"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:textColor="#ffffff"
+        android:gravity="center"
+        android:text="@string/test_menu_placeholder"/>
+    
+</RelativeLayout>

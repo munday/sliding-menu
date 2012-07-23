@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">SlideoutMenuActivity</string>
+    <string name="test_menu_placeholder">Menu goes here</string>
+    <string name="test_content_placeholder">Content goes here (tap to open/close drawer)</string>
+</resources>

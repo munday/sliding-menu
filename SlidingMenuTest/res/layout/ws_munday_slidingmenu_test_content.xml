@@ -1,0 +1,16 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:id="@+id/ws_munday_slidingmenu_test_content" 
+		android:layout_height="fill_parent" 
+		android:layout_width="fill_parent"
+		android:background="#ffffff"
+        android:padding="5dp">
+    
+    <TextView 
+        android:id="@+id/content_content"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:textColor="#000000"
+        android:gravity="center"
+        android:text="@string/test_content_placeholder"/>
+    
+</RelativeLayout>
