@@ -9,7 +9,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" >
 	
-        <RelativeLayout android:id="@+id/ws_munday_slidingmenu_content_frame"
+        <FrameLayout android:id="@+id/ws_munday_slidingmenu_content_frame"
 				android:layout_height="fill_parent" 
 				android:layout_width="fill_parent" 
 				android:layout_toRightOf="@+id/ws_munday_slidingmenu_menu_frame"/>
