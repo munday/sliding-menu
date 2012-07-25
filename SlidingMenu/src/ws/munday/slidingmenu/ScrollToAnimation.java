@@ -2,7 +2,7 @@ package ws.munday.slidingmenu;
 
 import android.view.View;
 import android.view.animation.Animation;
-import android.view.animation.DecelerateInterpolator;
+import android.view.animation.Interpolator;
 import android.view.animation.Transformation;
 
 public class ScrollToAnimation extends Animation {
@@ -13,14 +13,14 @@ public class ScrollToAnimation extends Animation {
 	
 	private View mView;
 	
-	public ScrollToAnimation(View v, int marginStart, int marginEnd){
+	public ScrollToAnimation(View v, int marginStart, int marginEnd, Interpolator i){
 
 		mStart = marginStart;
 		mEnd = marginEnd;
 		mView = v;
 		
 		mChange = mEnd - mStart;
-		setInterpolator(new DecelerateInterpolator(1.1f));
+		setInterpolator(i);
 		
 	}
 

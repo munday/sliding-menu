@@ -12,6 +12,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.Interpolator;
 import android.widget.RelativeLayout;
 import android.widget.FrameLayout.LayoutParams;
 
@@ -24,6 +26,7 @@ public class SlidingMenuActivity extends FragmentActivity {
 	private int mContentLayoutId;
 	private long mAnimationDuration = 400;
 	private int mMaxMenuWidth = 375;
+	private Interpolator mInterpolator = new DecelerateInterpolator(1.2f);
 	
 	public void setLayoutIds(int menuLayoutId, int contentLayoutId){
 		mMenuLayoutId = menuLayoutId;
@@ -36,6 +39,14 @@ public class SlidingMenuActivity extends FragmentActivity {
 	
 	public void setMaxMenuWidth(int width){
 		mMaxMenuWidth = width;
+	}
+	
+	public Interpolator getInterpolator(){
+		return mInterpolator;
+	}
+	
+	public void setInterpolator(Interpolator i){
+		mInterpolator = i;
 	}
 	
 	@Override
@@ -71,11 +82,11 @@ public class SlidingMenuActivity extends FragmentActivity {
 		v2.setDrawingCacheEnabled(true);
 		
 		if(mIsLayoutShown){
-			ScrollToAnimation a = new ScrollToAnimation(v2, 0, -(mMenuWidth));
+			ScrollToAnimation a = new ScrollToAnimation(v2, 0, -(mMenuWidth), mInterpolator);
 			a.setDuration(mAnimationDuration);
 			v2.startAnimation(a);
 		}else{	
-			ScrollToAnimation a = new ScrollToAnimation(v2, -(mMenuWidth), 0);
+			ScrollToAnimation a = new ScrollToAnimation(v2, -(mMenuWidth), 0, mInterpolator);
 			a.setDuration(mAnimationDuration);
 			v2.startAnimation(a);
 		}
@@ -84,6 +95,7 @@ public class SlidingMenuActivity extends FragmentActivity {
 	
 	}
 	
+	@SuppressWarnings("deprecation")
 	public void initSlidingMenu(boolean setScroll){
 		//get menu and main layout
 		View menu = findViewById(R.id.ws_munday_slidingmenu_menu_frame);
