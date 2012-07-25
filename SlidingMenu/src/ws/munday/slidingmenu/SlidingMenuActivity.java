@@ -74,6 +74,14 @@ public class SlidingMenuActivity extends FragmentActivity {
 		super.onConfigurationChanged(newConfig);
 	}
 	
+	@Override
+	public void onBackPressed() {
+		if(mIsLayoutShown){
+			toggleMenu();
+		}else{
+			super.onBackPressed();
+		}
+	}
 	
 	public void toggleMenu(){
 		
