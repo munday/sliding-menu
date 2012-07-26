@@ -19,6 +19,9 @@ import android.widget.FrameLayout.LayoutParams;
 
 public class SlidingMenuActivity extends FragmentActivity {
 
+	public static final int MENU_TYPE_SLIDING = 1;
+	public static final int MENU_TYPE_SLIDEOVER = 2;
+	
 	private boolean mIsLayoutShown = false;
 	private int mMenuWidth;
 	public static final String LOG_TAG = "SlidingMenuActivity";
@@ -27,7 +30,7 @@ public class SlidingMenuActivity extends FragmentActivity {
 	private long mAnimationDuration = 400;
 	private int mMaxMenuWidth = 375;
 	private Interpolator mInterpolator = new DecelerateInterpolator(1.2f);
-	
+	private int mType = MENU_TYPE_SLIDING;
 	public void setLayoutIds(int menuLayoutId, int contentLayoutId){
 		mMenuLayoutId = menuLayoutId;
 		mContentLayoutId = contentLayoutId;
@@ -39,6 +42,10 @@ public class SlidingMenuActivity extends FragmentActivity {
 	
 	public void setMaxMenuWidth(int width){
 		mMaxMenuWidth = width;
+	}
+	
+	public void setAnimationType(int type){
+		mType = type;
 	}
 	
 	public Interpolator getInterpolator(){
@@ -53,8 +60,15 @@ public class SlidingMenuActivity extends FragmentActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		setContentView(R.layout.ws_munday_slidingmenu);
-
+		switch(mType){
+		case MENU_TYPE_SLIDEOVER:
+			setContentView(R.layout.ws_munday_slideovermenu);
+			break;
+		default:
+			setContentView(R.layout.ws_munday_slidingmenu);
+			break;
+		}
+		
 		ViewGroup menu = (ViewGroup) findViewById(R.id.ws_munday_slidingmenu_menu_frame);
 		ViewGroup content = (ViewGroup) findViewById(R.id.ws_munday_slidingmenu_content_frame);
 
@@ -84,6 +98,17 @@ public class SlidingMenuActivity extends FragmentActivity {
 	}
 	
 	public void toggleMenu(){
+		switch(mType){
+		case MENU_TYPE_SLIDING:
+			toggleSlidingMenu();
+			break;
+		default:
+			toggleSlideOverMenu();
+			break;
+		}
+	}
+	
+	public void toggleSlidingMenu(){
 		
 		View v2 = findViewById(R.id.ws_munday_slidingmenu_root_layout);
 		v2.clearAnimation();
@@ -103,8 +128,42 @@ public class SlidingMenuActivity extends FragmentActivity {
 	
 	}
 	
-	@SuppressWarnings("deprecation")
+	public void toggleSlideOverMenu(){
+		
+		View v2 = findViewById(R.id.ws_munday_slidingmenu_content_frame);
+		v2.clearAnimation();
+		v2.setDrawingCacheEnabled(true);
+		
+		if(mIsLayoutShown){
+			MarginAnimation a = new MarginAnimation(v2, mMenuWidth, 0, mInterpolator);
+			a.setDuration(mAnimationDuration);
+			v2.startAnimation(a);
+		}else{	
+			MarginAnimation a = new MarginAnimation(v2, 0, mMenuWidth, mInterpolator);
+			a.setDuration(mAnimationDuration);
+			v2.startAnimation(a);
+		}
+		
+		mIsLayoutShown = !mIsLayoutShown;
+	
+	}
+	
 	public void initSlidingMenu(boolean setScroll){
+		switch(mType){
+		
+		case MENU_TYPE_SLIDEOVER:
+			initSlideOverMenu(setScroll);
+			break;
+		
+		default:
+			initSlideoutMenu(setScroll);
+			break;
+		
+		}
+	}
+	
+	@SuppressWarnings("deprecation")
+	public void initSlideoutMenu(boolean setScroll){
 		//get menu and main layout
 		View menu = findViewById(R.id.ws_munday_slidingmenu_menu_frame);
 		RelativeLayout root = (RelativeLayout) findViewById(R.id.ws_munday_slidingmenu_root_layout);
@@ -141,6 +200,41 @@ public class SlidingMenuActivity extends FragmentActivity {
 		
 		if(setScroll)
 			root.scrollTo(mMenuWidth, 0);
+		
+	}
+	
+	@SuppressWarnings("deprecation")
+	public void initSlideOverMenu(boolean reset){
+		//get menu and main layout
+		View menu = findViewById(R.id.ws_munday_slidingmenu_menu_frame);
+		
+		//get screen width
+		Display display = getWindowManager().getDefaultDisplay();
+		Point size = new Point();
+		int x = 0;
+		try{
+			Method m = Display.class.getMethod("getSize", new Class[] {} );
+			m.invoke(display, size);
+			x = size.x;
+		}catch(NoSuchMethodException nsme){
+			x = display.getWidth();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		
+		//icon width with 2dp pad on each side
+		int iconWidth = Utility.dipsToPixels(this, 74);
+		
+		//offset the width by 100 to leave room for the icon
+		mMenuWidth = Math.min(x - iconWidth, mMaxMenuWidth);
+		
+		//update sizes and margins for sliding menu
+		menu.setLayoutParams(new RelativeLayout.LayoutParams(mMenuWidth,LayoutParams.MATCH_PARENT));
+		menu.requestLayout();
 		
 	}
 	
