@@ -61,12 +61,12 @@ public class SlidingMenuActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		switch(mType){
-		case MENU_TYPE_SLIDEOVER:
-			setContentView(R.layout.ws_munday_slideovermenu);
-			break;
-		default:
-			setContentView(R.layout.ws_munday_slidingmenu);
-			break;
+			case MENU_TYPE_SLIDEOVER:
+				setContentView(R.layout.ws_munday_slideovermenu);
+				break;
+			default:
+				setContentView(R.layout.ws_munday_slidingmenu);
+				break;
 		}
 		
 		ViewGroup menu = (ViewGroup) findViewById(R.id.ws_munday_slidingmenu_menu_frame);
@@ -76,7 +76,7 @@ public class SlidingMenuActivity extends FragmentActivity {
 		menu.addView(li.inflate(mMenuLayoutId, null));
 		content.addView(li.inflate(mContentLayoutId, null));
 		
-		initSlidingMenu(true);	
+		initMenu(true);	
 		
 		Log.d(LOG_TAG,"onCreate finished");
 		
@@ -84,7 +84,7 @@ public class SlidingMenuActivity extends FragmentActivity {
 	
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
-		initSlidingMenu(false);
+		initMenu(false);
 		super.onConfigurationChanged(newConfig);
 	}
 	
@@ -99,12 +99,12 @@ public class SlidingMenuActivity extends FragmentActivity {
 	
 	public void toggleMenu(){
 		switch(mType){
-		case MENU_TYPE_SLIDING:
-			toggleSlidingMenu();
-			break;
-		default:
-			toggleSlideOverMenu();
-			break;
+			case MENU_TYPE_SLIDING:
+				toggleSlidingMenu();
+				break;
+			default:
+				toggleSlideOverMenu();
+				break;
 		}
 	}
 	
@@ -148,22 +148,22 @@ public class SlidingMenuActivity extends FragmentActivity {
 	
 	}
 	
-	public void initSlidingMenu(boolean setScroll){
+	public void initMenu(boolean setScroll){
 		switch(mType){
 		
-		case MENU_TYPE_SLIDEOVER:
-			initSlideOverMenu(setScroll);
-			break;
-		
-		default:
-			initSlideoutMenu(setScroll);
-			break;
+			case MENU_TYPE_SLIDEOVER:
+				initSlideOverMenu(setScroll);
+				break;
+			
+			default:
+				initSlideOutMenu(setScroll);
+				break;
 		
 		}
 	}
 	
 	@SuppressWarnings("deprecation")
-	public void initSlideoutMenu(boolean setScroll){
+	public void initSlideOutMenu(boolean setScroll){
 		//get menu and main layout
 		View menu = findViewById(R.id.ws_munday_slidingmenu_menu_frame);
 		RelativeLayout root = (RelativeLayout) findViewById(R.id.ws_munday_slidingmenu_root_layout);
