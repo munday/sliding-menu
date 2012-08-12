@@ -12,6 +12,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.RelativeLayout;
@@ -136,10 +138,39 @@ public class SlidingMenuActivity extends FragmentActivity {
 		
 		if(mIsLayoutShown){
 			MarginAnimation a = new MarginAnimation(v2, mMenuWidth, 0, mInterpolator);
+			a.setAnimationListener(new AnimationListener() {
+				
+				public void onAnimationStart(Animation animation) {
+				}
+				
+				public void onAnimationRepeat(Animation animation) {
+				}
+				
+				public void onAnimationEnd(Animation animation) {
+					View v1 = findViewById(R.id.ws_munday_slidingmenu_menu_frame);
+					v1.setVisibility(View.GONE);
+				}
+			});
+			
 			a.setDuration(mAnimationDuration);
 			v2.startAnimation(a);
 		}else{	
 			MarginAnimation a = new MarginAnimation(v2, 0, mMenuWidth, mInterpolator);
+			
+			a.setAnimationListener(new AnimationListener() {
+				
+				public void onAnimationStart(Animation animation) {
+					View v1 = findViewById(R.id.ws_munday_slidingmenu_menu_frame);
+					v1.setVisibility(View.VISIBLE);
+				}
+				
+				public void onAnimationRepeat(Animation animation) {
+				}
+				
+				public void onAnimationEnd(Animation animation) {
+				}
+			});
+			
 			a.setDuration(mAnimationDuration);
 			v2.startAnimation(a);
 		}
@@ -234,7 +265,7 @@ public class SlidingMenuActivity extends FragmentActivity {
 		
 		//update sizes and margins for sliding menu
 		menu.setLayoutParams(new RelativeLayout.LayoutParams(mMenuWidth,LayoutParams.MATCH_PARENT));
-		menu.requestLayout();
+		//menu.requestLayout();
 		
 	}
 	
