@@ -92,19 +92,22 @@ public class SlidingMenuActivity extends FragmentActivity {
 	}
 		
 	@Override
-	public boolean onKeyUp(int keyCode, KeyEvent event) {
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
 	    switch(keyCode){
 	    	case KeyEvent.KEYCODE_MENU:
 	    		toggleMenu();
-	    		break;
-	    	
-	    	case KeyEvent.KEYCODE_BACK:
-	    		if(mIsLayoutShown){
-	    			toggleMenu();
-	    		}
-	    		break;
+	    		return true;
 	    }
-	    return true;
+	    return super.onKeyDown(keyCode, event);
+	}
+	
+	@Override
+	public void onBackPressed() {
+		if(mIsLayoutShown){
+			toggleMenu();
+		}else{
+			super.onBackPressed();
+		}
 	}
 	
 	public void toggleMenu(){
