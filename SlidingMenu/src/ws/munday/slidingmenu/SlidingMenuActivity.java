@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Display;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -89,14 +90,21 @@ public class SlidingMenuActivity extends FragmentActivity {
 		initMenu(false);
 		super.onConfigurationChanged(newConfig);
 	}
-	
+		
 	@Override
-	public void onBackPressed() {
-		if(mIsLayoutShown){
-			toggleMenu();
-		}else{
-			super.onBackPressed();
-		}
+	public boolean onKeyUp(int keyCode, KeyEvent event) {
+	    switch(keyCode){
+	    	case KeyEvent.KEYCODE_MENU:
+	    		toggleMenu();
+	    		break;
+	    	
+	    	case KeyEvent.KEYCODE_BACK:
+	    		if(mIsLayoutShown){
+	    			toggleMenu();
+	    		}
+	    		break;
+	    }
+	    return true;
 	}
 	
 	public void toggleMenu(){
