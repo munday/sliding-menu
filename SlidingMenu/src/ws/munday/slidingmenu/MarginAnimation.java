@@ -31,7 +31,6 @@ public class MarginAnimation extends Animation {
 		LayoutParams lp = (LayoutParams) mView.getLayoutParams();
 		lp.setMargins( (int)(mStart + change), 0, -(int)(mStart + change), 0);
 		mView.setLayoutParams(lp);
-		mView.requestLayout();
 		
 		super.applyTransformation(interpolatedTime, t);
 	}
