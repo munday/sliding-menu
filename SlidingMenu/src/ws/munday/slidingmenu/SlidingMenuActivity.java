@@ -31,7 +31,8 @@ public class SlidingMenuActivity extends FragmentActivity {
 	private int mMenuLayoutId;
 	private int mContentLayoutId;
 	private long mAnimationDuration = 400;
-	private int mMaxMenuWidth = 375;
+	private int mMaxMenuWidthDps = 375;
+	private int mMinMainWidthDps = 50;
 	private Interpolator mInterpolator = new DecelerateInterpolator(1.2f);
 	private int mType = MENU_TYPE_SLIDING;
 	public void setLayoutIds(int menuLayoutId, int contentLayoutId){
@@ -44,7 +45,11 @@ public class SlidingMenuActivity extends FragmentActivity {
 	}
 	
 	public void setMaxMenuWidth(int width){
-		mMaxMenuWidth = width;
+		mMaxMenuWidthDps = width;
+	}
+	
+	public void setminContentWidth(int width){
+		mMinMainWidthDps = width;
 	}
 	
 	public void setAnimationType(int type){
@@ -228,11 +233,10 @@ public class SlidingMenuActivity extends FragmentActivity {
 			e.printStackTrace();
 		}
 		
-		//icon width with 2dp pad on each side
-		int iconWidth = Utility.dipsToPixels(this, 74);
+		int iconWidth = Utility.dipsToPixels(this, mMinMainWidthDps);
 		
 		//offset the width by 100 to leave room for the icon
-		mMenuWidth = Math.min(x - iconWidth, mMaxMenuWidth);
+		mMenuWidth = Math.min(x - iconWidth, mMaxMenuWidthDps);
 		
 		//update sizes and margins for sliding menu
 		menu.setLayoutParams(new RelativeLayout.LayoutParams(mMenuWidth,LayoutParams.MATCH_PARENT));
@@ -269,10 +273,10 @@ public class SlidingMenuActivity extends FragmentActivity {
 		}
 		
 		//icon width with 2dp pad on each side
-		int iconWidth = Utility.dipsToPixels(this, 74);
+		int iconWidth = Utility.dipsToPixels(this, mMinMainWidthDps);
 		
 		//offset the width by 100 to leave room for the icon
-		mMenuWidth = Math.min(x - iconWidth, mMaxMenuWidth);
+		mMenuWidth = Math.min(x - iconWidth, mMaxMenuWidthDps);
 		
 		//update sizes and margins for sliding menu
 		menu.setLayoutParams(new RelativeLayout.LayoutParams(mMenuWidth,LayoutParams.MATCH_PARENT));
