@@ -35,6 +35,7 @@ public class SlidingMenuActivity extends FragmentActivity {
 	private int mMinMainWidthDps = 50;
 	private Interpolator mInterpolator = new DecelerateInterpolator(1.2f);
 	private int mType = MENU_TYPE_SLIDING;
+	
 	public void setLayoutIds(int menuLayoutId, int contentLayoutId){
 		mMenuLayoutId = menuLayoutId;
 		mContentLayoutId = contentLayoutId;
@@ -116,6 +117,7 @@ public class SlidingMenuActivity extends FragmentActivity {
 	}
 	
 	public void toggleMenu(){
+
 		switch(mType){
 			case MENU_TYPE_SLIDING:
 				toggleSlidingMenu();
@@ -163,7 +165,7 @@ public class SlidingMenuActivity extends FragmentActivity {
 				}
 				
 				public void onAnimationEnd(Animation animation) {
-					View v1 = findViewById(R.id.ws_munday_slidingmenu_menu_frame);
+					ViewGroup v1 = (ViewGroup)findViewById(R.id.ws_munday_slidingmenu_menu_frame);
 					v1.setVisibility(View.GONE);
 				}
 			});
@@ -176,7 +178,7 @@ public class SlidingMenuActivity extends FragmentActivity {
 			a.setAnimationListener(new AnimationListener() {
 				
 				public void onAnimationStart(Animation animation) {
-					View v1 = findViewById(R.id.ws_munday_slidingmenu_menu_frame);
+					ViewGroup v1 = (ViewGroup) findViewById(R.id.ws_munday_slidingmenu_menu_frame);
 					v1.setVisibility(View.VISIBLE);
 				}
 				
@@ -185,6 +187,7 @@ public class SlidingMenuActivity extends FragmentActivity {
 				
 				public void onAnimationEnd(Animation animation) {
 				}
+		
 			});
 			
 			a.setDuration(mAnimationDuration);
@@ -196,6 +199,7 @@ public class SlidingMenuActivity extends FragmentActivity {
 	}
 	
 	public void initMenu(boolean setScroll){
+		
 		switch(mType){
 		
 			case MENU_TYPE_SLIDEOVER:
