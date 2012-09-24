@@ -251,6 +251,10 @@ public class SlidingMenuActivity extends FragmentActivity {
 		if(setScroll)
 			root.scrollTo(mMenuWidth, 0);
 		
+		mIsLayoutShown = !mIsLayoutShown;
+		toggleMenu();
+		
+		
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -285,6 +289,8 @@ public class SlidingMenuActivity extends FragmentActivity {
 		//update sizes and margins for sliding menu
 		menu.setLayoutParams(new RelativeLayout.LayoutParams(mMenuWidth,LayoutParams.MATCH_PARENT));
 		//menu.requestLayout();
+		mIsLayoutShown = !mIsLayoutShown;
+		toggleMenu();
 		
 	}
 	
