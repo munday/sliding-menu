@@ -85,7 +85,7 @@ public class SlidingMenuActivity extends FragmentActivity {
 		menu.addView(li.inflate(mMenuLayoutId, null));
 		content.addView(li.inflate(mContentLayoutId, null));
 		
-		initMenu(true);	
+		initMenu(false);	
 		
 		Log.d(LOG_TAG,"onCreate finished");
 		
@@ -93,7 +93,7 @@ public class SlidingMenuActivity extends FragmentActivity {
 	
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
-		initMenu(false);
+		initMenu(true);
 		super.onConfigurationChanged(newConfig);
 	}
 		
@@ -198,23 +198,23 @@ public class SlidingMenuActivity extends FragmentActivity {
 	
 	}
 	
-	public void initMenu(boolean setScroll){
+	public void initMenu(boolean isConfigChange){
 		
 		switch(mType){
 		
 			case MENU_TYPE_SLIDEOVER:
-				initSlideOverMenu(setScroll);
+				initSlideOverMenu(isConfigChange);
 				break;
 			
 			default:
-				initSlideOutMenu(setScroll);
+				initSlideOutMenu(isConfigChange);
 				break;
 		
 		}
 	}
 	
 	@SuppressWarnings("deprecation")
-	public void initSlideOutMenu(boolean setScroll){
+	public void initSlideOutMenu(boolean isConfigChange){
 		//get menu and main layout
 		View menu = findViewById(R.id.ws_munday_slidingmenu_menu_frame);
 		RelativeLayout root = (RelativeLayout) findViewById(R.id.ws_munday_slidingmenu_root_layout);
@@ -248,17 +248,15 @@ public class SlidingMenuActivity extends FragmentActivity {
 		
 		root.setLayoutParams(new LayoutParams(x + mMenuWidth,LayoutParams.MATCH_PARENT));
 		
-		if(setScroll)
+		if(!isConfigChange){
 			root.scrollTo(mMenuWidth, 0);
-		
-		mIsLayoutShown = !mIsLayoutShown;
-		toggleMenu();
-		
+			mIsLayoutShown = false;
+		}
 		
 	}
 	
 	@SuppressWarnings("deprecation")
-	public void initSlideOverMenu(boolean reset){
+	public void initSlideOverMenu(boolean isConfigChange){
 		//get menu and main layout
 		View menu = findViewById(R.id.ws_munday_slidingmenu_menu_frame);
 		
@@ -289,9 +287,11 @@ public class SlidingMenuActivity extends FragmentActivity {
 		//update sizes and margins for sliding menu
 		menu.setLayoutParams(new RelativeLayout.LayoutParams(mMenuWidth,LayoutParams.MATCH_PARENT));
 		//menu.requestLayout();
-		mIsLayoutShown = !mIsLayoutShown;
-		toggleMenu();
 		
+		if(isConfigChange){
+			mIsLayoutShown = !mIsLayoutShown;
+			toggleMenu();
+		}
 	}
 	
 }
