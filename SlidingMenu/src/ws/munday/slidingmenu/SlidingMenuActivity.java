@@ -248,7 +248,10 @@ public class SlidingMenuActivity extends FragmentActivity {
 		
 		root.setLayoutParams(new LayoutParams(x + mMenuWidth,LayoutParams.MATCH_PARENT));
 		
-		if(!isConfigChange){
+		if(isConfigChange){
+			mIsLayoutShown = !mIsLayoutShown;
+			toggleMenu();
+		}else{
 			root.scrollTo(mMenuWidth, 0);
 			mIsLayoutShown = false;
 		}
