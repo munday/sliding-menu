@@ -249,8 +249,11 @@ public class SlidingMenuActivity extends FragmentActivity {
 		root.setLayoutParams(new LayoutParams(x + mMenuWidth,LayoutParams.MATCH_PARENT));
 		
 		if(isConfigChange){
-			mIsLayoutShown = !mIsLayoutShown;
-			toggleMenu();
+			if(mIsLayoutShown){
+				root.scrollTo(0,0);
+			}else{
+				root.scrollTo(mMenuWidth, 0);
+			}
 		}else{
 			root.scrollTo(mMenuWidth, 0);
 			mIsLayoutShown = false;
@@ -262,7 +265,8 @@ public class SlidingMenuActivity extends FragmentActivity {
 	public void initSlideOverMenu(boolean isConfigChange){
 		//get menu and main layout
 		View menu = findViewById(R.id.ws_munday_slidingmenu_menu_frame);
-		
+		ViewGroup content = (ViewGroup) findViewById(R.id.ws_munday_slidingmenu_content_frame);
+
 		//get screen width
 		Display display = getWindowManager().getDefaultDisplay();
 		Point size = new Point();
