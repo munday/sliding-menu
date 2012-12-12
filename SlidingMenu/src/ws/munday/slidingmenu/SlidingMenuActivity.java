@@ -84,7 +84,7 @@ public class SlidingMenuActivity extends FragmentActivity {
 		LayoutInflater li = LayoutInflater.from(this);
 		menu.addView(li.inflate(mMenuLayoutId, null));
 		content.addView(li.inflate(mContentLayoutId, null));
-		
+		menu.setVisibility(View.GONE);
 		initMenu(false);	
 		
 		Log.d(LOG_TAG,"onCreate finished");
