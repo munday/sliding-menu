@@ -10,7 +10,7 @@
 		    android:angle="0" />
 		</shape>
 	</item>
-	<item>
+	<!-- <item>
 		<shape android:shape="rectangle">  
 		  <gradient
 		    android:centerColor="#55111111"
@@ -19,5 +19,5 @@
 		    android:angle="90" />
 		    
 		</shape>
-	</item>
+	</item>  -->
 </layer-list>

@@ -2,6 +2,8 @@ package ws.munday.slidingmenu;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Point;
 import android.os.Bundle;
@@ -133,14 +135,20 @@ public class SlidingMenuActivity extends FragmentActivity {
 		View v2 = findViewById(R.id.ws_munday_slidingmenu_root_layout);
 		v2.clearAnimation();
 		v2.setDrawingCacheEnabled(true);
+		int orientation = getResources().getConfiguration().orientation;
+		long tmpDuration = mAnimationDuration;
+		
+		if(orientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+				|| orientation == ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE)
+			tmpDuration/=1.7;
 		
 		if(mIsLayoutShown){
 			ScrollToAnimation a = new ScrollToAnimation(v2, 0, -(mMenuWidth), mInterpolator);
-			a.setDuration(mAnimationDuration);
+			a.setDuration(tmpDuration);
 			v2.startAnimation(a);
 		}else{	
 			ScrollToAnimation a = new ScrollToAnimation(v2, -(mMenuWidth), 0, mInterpolator);
-			a.setDuration(mAnimationDuration);
+			a.setDuration(tmpDuration);
 			v2.startAnimation(a);
 		}
 		
@@ -265,7 +273,7 @@ public class SlidingMenuActivity extends FragmentActivity {
 	public void initSlideOverMenu(boolean isConfigChange){
 		//get menu and main layout
 		View menu = findViewById(R.id.ws_munday_slidingmenu_menu_frame);
-		ViewGroup content = (ViewGroup) findViewById(R.id.ws_munday_slidingmenu_content_frame);
+		//ViewGroup content = (ViewGroup) findViewById(R.id.ws_munday_slidingmenu_content_frame);
 
 		//get screen width
 		Display display = getWindowManager().getDefaultDisplay();
