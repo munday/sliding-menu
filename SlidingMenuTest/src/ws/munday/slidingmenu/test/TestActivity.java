@@ -3,7 +3,7 @@ package ws.munday.slidingmenu.test;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
-import ws.munday.slidingmenu.R;
+import ws.munday.slidingmenu.test.R;
 import ws.munday.slidingmenu.SlidingMenuActivity;
 
 public class TestActivity extends SlidingMenuActivity {
