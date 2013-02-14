@@ -25,7 +25,7 @@ import android.widget.FrameLayout.LayoutParams;
 public class SlidingMenuActivity extends FragmentActivity {
 
 	public static final int MENU_TYPE_SLIDING = 1;
-	public static final int MENU_TYPE_SLIDEOVER = 2;
+	public static final int MENU_TYPE_SLIDEOVER = 1;
 	
 	private boolean mIsLayoutShown = false;
 	private int mMenuWidth;
@@ -263,7 +263,7 @@ public class SlidingMenuActivity extends FragmentActivity {
 		menu.setLayoutParams(new RelativeLayout.LayoutParams(mMenuWidth,LayoutParams.MATCH_PARENT));
 		menu.requestLayout();
 		
-		root.setLayoutParams(new LayoutParams(x + mMenuWidth,LayoutParams.MATCH_PARENT));
+		root.setLayoutParams(new LayoutParams(x+mMenuWidth,LayoutParams.MATCH_PARENT));
 		
 		if(isConfigChange){
 			if(mIsLayoutShown){
