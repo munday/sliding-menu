@@ -55,7 +55,7 @@ which slides the menu out from the left, pushing the main content over and
     MENU\_TYPE\_SLIDEOVER  
 which is the default, where the content slides away exposing the menu underneath.
 
-setInterpolator(Interpolator i)  
+    setInterpolator(Interpolator i)  
 Sets the interpolator used by the animation. The default is a DecelerateInterpolator which makes the animation start fast and end slow.
 
 
