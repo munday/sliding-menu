@@ -2,8 +2,6 @@ package ws.munday.slidingmenu;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
-import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Point;
 import android.os.Bundle;
@@ -21,7 +19,6 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
-import android.widget.FrameLayout.LayoutParams;
 
 public class SlidingMenuActivity extends FragmentActivity {
 
