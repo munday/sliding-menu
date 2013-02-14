@@ -60,7 +60,7 @@ public class SlidingMenuActivity extends FragmentActivity {
 		mMaxMenuWidthDps = width;
 	}
 	
-	public void setminContentWidth(int width){
+	public void setMinContentWidth(int width){
 		mMinMainWidthDps = width;
 	}
 	
