@@ -37,6 +37,15 @@ public class SlidingMenuActivity extends FragmentActivity {
 	private int mMinMainWidthDps = 50;
 	private Interpolator mInterpolator = new DecelerateInterpolator(1.2f);
 	private int mType = MENU_TYPE_SLIDING;
+	private boolean mShowTitleBar = false;
+	
+	public SlidingMenuActivity(){
+		this(false);
+	}
+	
+	public SlidingMenuActivity(boolean showTitleBar){
+		mShowTitleBar = showTitleBar;
+	}
 	
 	public void setLayoutIds(int menuLayoutId, int contentLayoutId){
 		mMenuLayoutId = menuLayoutId;
@@ -70,7 +79,7 @@ public class SlidingMenuActivity extends FragmentActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		if(!mShowTitleBar) requestWindowFeature(Window.FEATURE_NO_TITLE);
 		switch(mType){
 			case MENU_TYPE_SLIDEOVER:
 				setContentView(R.layout.ws_munday_slideovermenu);
