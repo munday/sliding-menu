@@ -25,7 +25,7 @@ import android.widget.FrameLayout.LayoutParams;
 public class SlidingMenuActivity extends FragmentActivity {
 
 	public static final int MENU_TYPE_SLIDING = 1;
-	public static final int MENU_TYPE_SLIDEOVER = 1;
+	public static final int MENU_TYPE_SLIDEOVER = 2;
 	
 	private boolean mIsLayoutShown = false;
 	private int mMenuWidth;
@@ -81,11 +81,8 @@ public class SlidingMenuActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		if(!mShowTitleBar) requestWindowFeature(Window.FEATURE_NO_TITLE);
 		switch(mType){
-			case MENU_TYPE_SLIDEOVER:
-				setContentView(R.layout.ws_munday_slideovermenu);
-				break;
 			default:
-				setContentView(R.layout.ws_munday_slidingmenu);
+				setContentView(R.layout.ws_munday_slideovermenu);
 				break;
 		}
 		
@@ -130,9 +127,6 @@ public class SlidingMenuActivity extends FragmentActivity {
 	public void toggleMenu(){
 
 		switch(mType){
-			case MENU_TYPE_SLIDING:
-				toggleSlidingMenu();
-				break;
 			default:
 				toggleSlideOverMenu();
 				break;
@@ -224,7 +218,8 @@ public class SlidingMenuActivity extends FragmentActivity {
 				break;
 			
 			default:
-				initSlideOutMenu(isConfigChange);
+				initSlideOverMenu(isConfigChange);
+				//initSlideOutMenu(isConfigChange);
 				break;
 		
 		}
