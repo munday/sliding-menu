@@ -39,23 +39,23 @@ __Note:__ if the title bar is set to show, it does not slide over. It just stays
 
 ### Functions
 
-__setAnimationDuration(long duration)__  
+__`setAnimationDuration(long duration)`__
 Sets how long in milliseconds the opening/closing animation will run.
 
-__setMaxMenuWidth(int width)__  
+__`setMaxMenuWidth(int width)`__
 Sets the max width (in dips) of the menu. The main content will stop sliding at this many dips from the left side of the screen (unless it would make the content slide farther than the minContentWidth below.
 
-__setMinContentWidth(int width)__  
+__`setMinContentWidth(int width)`__
 Sets the minimum amount the content window can leave on the screen. The main content will stop sliding at this many dips from the right side of the screen.
 
-__setAnimationType(int type)__
+__`setAnimationType(int type)`__
 Sets the type of animation used. Currently there are 2 types:  
-    MENU\_TYPE\_SLIDING  
+    `MENU\_TYPE\_SLIDING`  
 which slides the menu out from the left, pushing the main content over and  
-    MENU\_TYPE\_SLIDEOVER  
+    `MENU\_TYPE\_SLIDEOVER`  
 which is the default, where the content slides away exposing the menu underneath.
 
-__setInterpolator(Interpolator i)__  
+__`setInterpolator(Interpolator i)`__
 Sets the interpolator used by the animation. The default is a DecelerateInterpolator which makes the animation start fast and end slow.
 
 
