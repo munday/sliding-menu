@@ -300,21 +300,19 @@ public class SlidingMenuActivity extends FragmentActivity {
 		RelativeLayout.LayoutParams mp = new RelativeLayout.LayoutParams(mMenuWidth,RelativeLayout.LayoutParams.MATCH_PARENT);
 		RelativeLayout.LayoutParams rp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT ,RelativeLayout.LayoutParams.MATCH_PARENT);
 		
-		/*
 		if(isConfigChange){
 			if(mIsLayoutShown){
-				mp.leftMargin = -mMenuWidth;
-				rp.leftMargin = 0;
-			}else{
 				mp.leftMargin = 0;
 				rp.leftMargin = mMenuWidth;
+			}else{
+				mp.leftMargin = -mMenuWidth;
+				rp.leftMargin = 0;
 			}
 		}else{
 			mp.leftMargin = -mMenuWidth;
 			rp.leftMargin = 0;
 			mIsLayoutShown = false;
 		}
-		*/
 		
 		menu.setLayoutParams(mp);
 		menu.requestLayout();
