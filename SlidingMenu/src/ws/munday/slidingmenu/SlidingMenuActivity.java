@@ -126,10 +126,10 @@ public class SlidingMenuActivity extends FragmentActivity {
 
 		switch(mType){
 			case MENU_TYPE_SLIDEOVER:
-				toggleSlidingMenu();
+				toggleSlideOverMenu();
 				break;
 			default:
-				toggleSlideOverMenu();
+				toggleSlidingMenu();
 				break;
 		}
 	}
@@ -321,12 +321,10 @@ public class SlidingMenuActivity extends FragmentActivity {
 		mMenuWidth = Math.min(x - iconWidth, mMaxMenuWidthDps);
 		
 		//update sizes and margins for sliding menu
-		RelativeLayout.LayoutParams mp = new RelativeLayout.LayoutParams(x+mMenuWidth,RelativeLayout.LayoutParams.MATCH_PARENT);
+		RelativeLayout.LayoutParams mp = new RelativeLayout.LayoutParams(mMenuWidth,RelativeLayout.LayoutParams.MATCH_PARENT);
+		RelativeLayout.LayoutParams rp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT ,RelativeLayout.LayoutParams.MATCH_PARENT);
 		
-		
-		RelativeLayout.LayoutParams rp = new RelativeLayout.LayoutParams(x+mMenuWidth,RelativeLayout.LayoutParams.MATCH_PARENT);
-		
-		
+		/*
 		if(isConfigChange){
 			if(mIsLayoutShown){
 				mp.leftMargin = -mMenuWidth;
@@ -340,6 +338,7 @@ public class SlidingMenuActivity extends FragmentActivity {
 			rp.leftMargin = 0;
 			mIsLayoutShown = false;
 		}
+		*/
 		
 		menu.setLayoutParams(mp);
 		menu.requestLayout();
