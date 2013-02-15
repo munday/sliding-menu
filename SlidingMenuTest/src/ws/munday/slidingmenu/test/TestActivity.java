@@ -12,6 +12,7 @@ public class TestActivity extends SlidingMenuActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		setLayoutIds(R.layout.ws_munday_slidingmenu_test_menu, R.layout.ws_munday_slidingmenu_test_content);
 		setAnimationDuration(300);
+		setAnimationType(MENU_TYPE_SLIDEOVER);
 		super.onCreate(savedInstanceState);
 		
 		TextView tv = (TextView) findViewById(R.id.content_content);
