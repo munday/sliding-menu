@@ -49,11 +49,14 @@ Sets the max width (in dips) of the menu. The main content will stop sliding at 
 Sets the minimum amount the content window can leave on the screen. The main content will stop sliding at this many dips from the right side of the screen.
 
     setAnimationType(int type)  
-Sets the type of animation used. Currently there are 2 types:  
+Sets the type of animation used. Currently there are 3 types:  
     MENU\_TYPE\_SLIDING  
 which slides the menu out from the left, pushing the main content over and  
     MENU\_TYPE\_SLIDEOVER  
-which is the default, where the content slides away exposing the menu underneath.
+which is the default, where the content slides away exposing the menu underneath. And finally, the experimental
+    MENU\_TYPE\_PARALLAX
+which sounds all fancy, but just means that the menu and content slide at different speeds.
+
 
     setInterpolator(Interpolator i)  
 Sets the interpolator used by the animation. The default is a DecelerateInterpolator which makes the animation start fast and end slow.

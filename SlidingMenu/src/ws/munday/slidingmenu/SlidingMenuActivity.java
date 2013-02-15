@@ -24,6 +24,7 @@ public class SlidingMenuActivity extends FragmentActivity {
 
 	public static final int MENU_TYPE_SLIDING = 1;
 	public static final int MENU_TYPE_SLIDEOVER = 2;
+	public static final int MENU_TYPE_PARALLAX = 3;
 	
 	private boolean mIsLayoutShown = false;
 	private int mMenuWidth;
@@ -128,6 +129,9 @@ public class SlidingMenuActivity extends FragmentActivity {
 			case MENU_TYPE_SLIDEOVER:
 				toggleSlideOverMenu();
 				break;
+			case MENU_TYPE_PARALLAX:
+				toggleSlidingMenu(mAnimationDuration/2);
+				break;
 			default:
 				toggleSlidingMenu();
 				break;
@@ -177,6 +181,10 @@ public class SlidingMenuActivity extends FragmentActivity {
 	}
 	
 	public void toggleSlidingMenu(){
+		toggleSlidingMenu(mAnimationDuration);
+	}
+	
+	public void toggleSlidingMenu(long menuAnimationDuration){
 		
 		View v2 = findViewById(R.id.ws_munday_slidingmenu_content_frame);
 		v2.clearAnimation();
@@ -199,7 +207,7 @@ public class SlidingMenuActivity extends FragmentActivity {
 				}
 			});
 			
-			a.setDuration(mAnimationDuration);
+			a.setDuration(menuAnimationDuration);
 			v2.startAnimation(a);
 			
 			MarginAnimation a2 = new MarginAnimation(vMenu, 0, -mMenuWidth, mInterpolator);
@@ -243,7 +251,7 @@ public class SlidingMenuActivity extends FragmentActivity {
 				public void onAnimationEnd(Animation animation) {}
 			});
 			
-			a2.setDuration(mAnimationDuration);
+			a2.setDuration(menuAnimationDuration);
 			vMenu.startAnimation(a2);
 			
 		}
@@ -298,27 +306,30 @@ public class SlidingMenuActivity extends FragmentActivity {
 		
 		//update sizes and margins for sliding menu
 		RelativeLayout.LayoutParams mp = new RelativeLayout.LayoutParams(mMenuWidth,RelativeLayout.LayoutParams.MATCH_PARENT);
-		RelativeLayout.LayoutParams rp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT ,RelativeLayout.LayoutParams.MATCH_PARENT);
+		RelativeLayout.LayoutParams rp = new RelativeLayout.LayoutParams(x ,RelativeLayout.LayoutParams.MATCH_PARENT);
 		
 		if(isConfigChange){
 			if(mIsLayoutShown){
 				mp.leftMargin = 0;
 				rp.leftMargin = mMenuWidth;
+				rp.rightMargin = -mMenuWidth;
 			}else{
 				mp.leftMargin = -mMenuWidth;
 				rp.leftMargin = 0;
+				rp.rightMargin = 0;
 			}
 		}else{
 			mp.leftMargin = -mMenuWidth;
 			rp.leftMargin = 0;
+			rp.rightMargin = -mMenuWidth;
 			mIsLayoutShown = false;
 		}
 		
 		menu.setLayoutParams(mp);
-		menu.requestLayout();
+		//menu.requestLayout();
 		
 		root.setLayoutParams(rp);
-		root.requestLayout();
+		//root.requestLayout();
 	}
 	
 	@SuppressWarnings("deprecation")
