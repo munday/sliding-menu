@@ -143,12 +143,8 @@ public class SlidingMenuActivity extends FragmentActivity {
 		if(mIsLayoutShown){
 			MarginAnimation a = new MarginAnimation(v2, mMenuWidth, 0, mInterpolator);
 			a.setAnimationListener(new AnimationListener() {
-				
-				public void onAnimationStart(Animation animation) {
-				}
-				
-				public void onAnimationRepeat(Animation animation) {
-				}
+				public void onAnimationStart(Animation animation) {}				
+				public void onAnimationRepeat(Animation animation) {}
 				
 				public void onAnimationEnd(Animation animation) {
 					ViewGroup v1 = (ViewGroup)findViewById(R.id.ws_munday_slidingmenu_menu_frame);
@@ -162,18 +158,13 @@ public class SlidingMenuActivity extends FragmentActivity {
 			MarginAnimation a = new MarginAnimation(v2, 0, mMenuWidth, mInterpolator);
 			
 			a.setAnimationListener(new AnimationListener() {
-				
 				public void onAnimationStart(Animation animation) {
 					ViewGroup v1 = (ViewGroup) findViewById(R.id.ws_munday_slidingmenu_menu_frame);
 					v1.setVisibility(View.VISIBLE);
 				}
 				
-				public void onAnimationRepeat(Animation animation) {
-				}
-				
-				public void onAnimationEnd(Animation animation) {
-				}
-		
+				public void onAnimationRepeat(Animation animation) {}
+				public void onAnimationEnd(Animation animation) {}
 			});
 			
 			a.setDuration(mAnimationDuration);
@@ -197,14 +188,24 @@ public class SlidingMenuActivity extends FragmentActivity {
 		
 		if(mIsLayoutShown){
 			
+			MarginAnimation a = new MarginAnimation(v2, mMenuWidth, 0, mInterpolator);
+			a.setAnimationListener(new AnimationListener() {
+				public void onAnimationStart(Animation animation) {}
+				public void onAnimationRepeat(Animation animation) {}
+				
+				public void onAnimationEnd(Animation animation) {
+					ViewGroup v1 = (ViewGroup)findViewById(R.id.ws_munday_slidingmenu_menu_frame);
+					v1.setVisibility(View.GONE);
+				}
+			});
+			
+			a.setDuration(mAnimationDuration);
+			v2.startAnimation(a);
+			
 			MarginAnimation a2 = new MarginAnimation(vMenu, 0, -mMenuWidth, mInterpolator);
 			a2.setAnimationListener(new AnimationListener() {
-				
-				public void onAnimationStart(Animation animation) {
-				}
-				
-				public void onAnimationRepeat(Animation animation) {
-				}
+				public void onAnimationStart(Animation animation) {}
+				public void onAnimationRepeat(Animation animation) {}
 				
 				public void onAnimationEnd(Animation animation) {
 					ViewGroup v1 = (ViewGroup)findViewById(R.id.ws_munday_slidingmenu_menu_frame);
@@ -215,38 +216,17 @@ public class SlidingMenuActivity extends FragmentActivity {
 			a2.setDuration(mAnimationDuration);
 			vMenu.startAnimation(a2);
 			
-			MarginAnimation a = new MarginAnimation(v2, mMenuWidth, 0, mInterpolator);
-			a.setAnimationListener(new AnimationListener() {
-				
-				public void onAnimationStart(Animation animation) {
-				}
-				
-				public void onAnimationRepeat(Animation animation) {
-				}
-				
-				public void onAnimationEnd(Animation animation) {
-					ViewGroup v1 = (ViewGroup)findViewById(R.id.ws_munday_slidingmenu_menu_frame);
-					v1.setVisibility(View.GONE);
-				}
-			});
-			
-			a.setDuration(mAnimationDuration);
-			v2.startAnimation(a);
-			
 		}else{	
-			MarginAnimation a = new MarginAnimation(v2, 0, mMenuWidth, mInterpolator);
 			
+			MarginAnimation a = new MarginAnimation(v2, 0, mMenuWidth, mInterpolator);
 			a.setAnimationListener(new AnimationListener() {
-				
 				public void onAnimationStart(Animation animation) {
+					ViewGroup v1 = (ViewGroup) findViewById(R.id.ws_munday_slidingmenu_menu_frame);
+					v1.setVisibility(View.VISIBLE);
 				}
 				
-				public void onAnimationRepeat(Animation animation) {
-				}
-				
-				public void onAnimationEnd(Animation animation) {
-				}
-		
+				public void onAnimationRepeat(Animation animation) {}
+				public void onAnimationEnd(Animation animation) {}
 			});
 			
 			a.setDuration(mAnimationDuration);
@@ -254,17 +234,13 @@ public class SlidingMenuActivity extends FragmentActivity {
 			
 			MarginAnimation a2 = new MarginAnimation(vMenu, -mMenuWidth, 0, mInterpolator);
 			a2.setAnimationListener(new AnimationListener() {
-				
 				public void onAnimationStart(Animation animation) {
 					ViewGroup v1 = (ViewGroup) findViewById(R.id.ws_munday_slidingmenu_menu_frame);
 					v1.setVisibility(View.VISIBLE);
 				}
 				
-				public void onAnimationRepeat(Animation animation) {
-				}
-				
-				public void onAnimationEnd(Animation animation) {
-				}
+				public void onAnimationRepeat(Animation animation) {}
+				public void onAnimationEnd(Animation animation) {}
 			});
 			
 			a2.setDuration(mAnimationDuration);
