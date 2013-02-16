@@ -15,4 +15,11 @@ public class Utility {
 		final float scale = context.getResources().getDisplayMetrics().density;
 		return (int)(pixels / scale);
 	}
+	
+	public static double getStatusbarHeight(Context c){
+
+		return Math.ceil(25 * c.getResources().getDisplayMetrics().density);
+		
+	}
+	
 }

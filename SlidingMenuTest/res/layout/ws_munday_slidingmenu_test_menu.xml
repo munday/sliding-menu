@@ -8,7 +8,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:textColor="#ffffff"
-        android:gravity="center"
+        android:gravity="top"
         android:text="@string/test_menu_placeholder"/>
     
 </RelativeLayout>

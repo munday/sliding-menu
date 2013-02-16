@@ -2,6 +2,8 @@ package ws.munday.slidingmenu;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+
+import ws.munday.slidingmenu.R.layout;
 import android.content.res.Configuration;
 import android.graphics.Point;
 import android.os.Bundle;
@@ -78,21 +80,51 @@ public class SlidingMenuActivity extends FragmentActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		if(!mShowTitleBar) requestWindowFeature(Window.FEATURE_NO_TITLE);
-		switch(mType){
-			default:
-				setContentView(R.layout.ws_munday_slideovermenu);
-				break;
+		
+		if(!mShowTitleBar){ 
+			requestWindowFeature(Window.FEATURE_NO_TITLE);
+			setContentView(R.layout.ws_munday_slideovermenu);
+			
+			ViewGroup menu = (ViewGroup) findViewById(R.id.ws_munday_slidingmenu_menu_frame);
+			ViewGroup content = (ViewGroup) findViewById(R.id.ws_munday_slidingmenu_content_frame);
+	
+			LayoutInflater li = getLayoutInflater();
+			
+			menu.addView(li.inflate(mMenuLayoutId, null));
+			content.addView(li.inflate(mContentLayoutId, null));
+			
+			menu.setVisibility(View.GONE);
+			
+		}else{
+			
+			setContentView(mContentLayoutId);
+			Window window = getWindow();
+			
+			ViewGroup decor = (ViewGroup) window.getDecorView();
+			View allcontent = (ViewGroup)decor.getChildAt(0);
+			decor.removeView(allcontent);
+			
+			int statusbarHeight = (int)Utility.getStatusbarHeight(this);
+			
+			LayoutInflater li = getLayoutInflater();
+			
+			RelativeLayout main = (RelativeLayout) li.inflate(layout.ws_munday_slideovermenu, null);
+			
+			ViewGroup menu = (ViewGroup) main.findViewById(R.id.ws_munday_slidingmenu_menu_frame);
+			ViewGroup content = (ViewGroup) main.findViewById(R.id.ws_munday_slidingmenu_content_frame);
+			
+			ViewGroup mnu = (ViewGroup) li.inflate(mMenuLayoutId, null);
+			mnu.setPadding(mnu.getPaddingLeft(), mnu.getPaddingTop()+statusbarHeight, mnu.getPaddingRight(), mnu.getPaddingTop());
+			content.addView(allcontent);
+			menu.addView(mnu);
+			
+			decor.addView(main);
+			menu.setVisibility(View.GONE);
+			
 		}
 		
-		ViewGroup menu = (ViewGroup) findViewById(R.id.ws_munday_slidingmenu_menu_frame);
-		ViewGroup content = (ViewGroup) findViewById(R.id.ws_munday_slidingmenu_content_frame);
-
-		LayoutInflater li = LayoutInflater.from(this);
-		menu.addView(li.inflate(mMenuLayoutId, null));
-		content.addView(li.inflate(mContentLayoutId, null));
-		menu.setVisibility(View.GONE);
 		initMenu(false);	
+		
 		
 		Log.d(LOG_TAG,"onCreate finished");
 		
@@ -186,6 +218,8 @@ public class SlidingMenuActivity extends FragmentActivity {
 	
 	public void toggleSlidingMenu(long menuAnimationDuration){
 		
+		boolean parallax = menuAnimationDuration!=mAnimationDuration;
+		
 		View v2 = findViewById(R.id.ws_munday_slidingmenu_content_frame);
 		v2.clearAnimation();
 		v2.setDrawingCacheEnabled(true);
@@ -210,20 +244,11 @@ public class SlidingMenuActivity extends FragmentActivity {
 			a.setDuration(menuAnimationDuration);
 			v2.startAnimation(a);
 			
-			MarginAnimation a2 = new MarginAnimation(vMenu, 0, -mMenuWidth, mInterpolator);
-			a2.setAnimationListener(new AnimationListener() {
-				public void onAnimationStart(Animation animation) {}
-				public void onAnimationRepeat(Animation animation) {}
-				
-				public void onAnimationEnd(Animation animation) {
-					ViewGroup v1 = (ViewGroup)findViewById(R.id.ws_munday_slidingmenu_menu_frame);
-					v1.setVisibility(View.GONE);
-				}
-			});
-			
-			a2.setDuration(mAnimationDuration);
-			vMenu.startAnimation(a2);
-			
+			if(parallax){
+				MarginAnimation a2 = new MarginAnimation(vMenu, 0, -mMenuWidth, mInterpolator);
+				a2.setDuration(mAnimationDuration);
+				vMenu.startAnimation(a2);
+			}
 		}else{	
 			
 			MarginAnimation a = new MarginAnimation(v2, 0, mMenuWidth, mInterpolator);
@@ -240,20 +265,11 @@ public class SlidingMenuActivity extends FragmentActivity {
 			a.setDuration(mAnimationDuration);
 			v2.startAnimation(a);
 			
-			MarginAnimation a2 = new MarginAnimation(vMenu, -mMenuWidth, 0, mInterpolator);
-			a2.setAnimationListener(new AnimationListener() {
-				public void onAnimationStart(Animation animation) {
-					ViewGroup v1 = (ViewGroup) findViewById(R.id.ws_munday_slidingmenu_menu_frame);
-					v1.setVisibility(View.VISIBLE);
-				}
-				
-				public void onAnimationRepeat(Animation animation) {}
-				public void onAnimationEnd(Animation animation) {}
-			});
-			
-			a2.setDuration(menuAnimationDuration);
-			vMenu.startAnimation(a2);
-			
+			if(parallax){
+				MarginAnimation a2 = new MarginAnimation(vMenu, -mMenuWidth, 0, mInterpolator);
+				a2.setDuration(menuAnimationDuration);
+				vMenu.startAnimation(a2);
+			}
 		}
 		
 		mIsLayoutShown = !mIsLayoutShown;
@@ -326,10 +342,10 @@ public class SlidingMenuActivity extends FragmentActivity {
 		}
 		
 		menu.setLayoutParams(mp);
-		//menu.requestLayout();
+		menu.requestLayout();
 		
 		root.setLayoutParams(rp);
-		//root.requestLayout();
+		root.requestLayout();
 	}
 	
 	@SuppressWarnings("deprecation")

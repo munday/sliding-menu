@@ -35,7 +35,8 @@ If you want a title bar (actionbar) call:
     SlidingMenuActivity(bool showTitleBar)
 
 The constructor is the only place to set the showTitleBar option because if it is set after the call to `onCreate()` it won't actually remove the title bar.  
-__Note:__ if the title bar is set to show, it does not slide over. It just stays at the top, hence the default setting being to hide it.
+__Note:__ ~~if the title bar is set to show, it does not slide over. It just stays at the top, hence the default setting being to hide it.~~
+The titlebar now slides too!
 
 ### Functions
 

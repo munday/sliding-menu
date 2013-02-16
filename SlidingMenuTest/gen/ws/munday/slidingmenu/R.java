@@ -21,7 +21,6 @@ public final class R {
 		public static final int test_content_placeholder = 0x7f040002;
 	}
 	public static final class layout {
-		public static final int ws_munday_slidingmenu = 0x7f030001;
 		public static final int ws_munday_slideovermenu = 0x7f030000;
 	}
 	public static final class drawable {

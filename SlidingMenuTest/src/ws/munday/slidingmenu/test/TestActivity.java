@@ -8,6 +8,10 @@ import ws.munday.slidingmenu.SlidingMenuActivity;
 
 public class TestActivity extends SlidingMenuActivity {
 
+	public TestActivity() {
+		super(true);
+	}
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		setLayoutIds(R.layout.ws_munday_slidingmenu_test_menu, R.layout.ws_munday_slidingmenu_test_content);
