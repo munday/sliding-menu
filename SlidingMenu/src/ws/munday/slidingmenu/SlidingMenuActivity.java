@@ -45,8 +45,8 @@ public class SlidingMenuActivity extends FragmentActivity {
 		this(true);
 	}
 	
-	public SlidingMenuActivity(boolean showTitleBar){
-		mSlideTitleBar = showTitleBar;
+	public SlidingMenuActivity(boolean slideTitleBar){
+		mSlideTitleBar = slideTitleBar;
 	}
 	
 	public void setLayoutIds(int menuLayoutId, int contentLayoutId){

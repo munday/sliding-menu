@@ -29,14 +29,13 @@ You can wire up the toggle to any click/touch/etc event by calling
 
     SlidingMenuActivity()
 
-Is the default constructor, this initializes the activity with a hidden title bar (actionbar)
-If you want a title bar (actionbar) call:  
+Is the default constructor, this initializes the activity with a sliding title bar (actionbar)
+If you want to pick if the title bar (actionbar) slides or not call:
 
-    SlidingMenuActivity(bool showTitleBar)
+    SlidingMenuActivity(bool slideTitleBar)
 
-The constructor is the only place to set the showTitleBar option because if it is set after the call to `onCreate()` it won't actually remove the title bar.  
-__Note:__ ~~if the title bar is set to show, it does not slide over. It just stays at the top, hence the default setting being to hide it.~~
-The titlebar now slides too!
+If you want the titlebar (actionbar) to disapper, call `requestWindowFeature(Window.FEATURE_NO_TITLE);` in your `onCreate()`.
+
 
 ### Functions
 
