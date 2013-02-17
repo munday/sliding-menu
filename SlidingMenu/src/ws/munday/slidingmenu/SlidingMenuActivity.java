@@ -20,6 +20,7 @@ import android.view.animation.Animation.AnimationListener;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 public class SlidingMenuActivity extends FragmentActivity {
@@ -38,14 +39,14 @@ public class SlidingMenuActivity extends FragmentActivity {
 	private int mMinMainWidthDps = 50;
 	private Interpolator mInterpolator = new DecelerateInterpolator(1.2f);
 	private int mType = MENU_TYPE_SLIDING;
-	private boolean mShowTitleBar = false;
+	private boolean mSlideTitleBar = true;
 	
 	public SlidingMenuActivity(){
-		this(false);
+		this(true);
 	}
 	
 	public SlidingMenuActivity(boolean showTitleBar){
-		mShowTitleBar = showTitleBar;
+		mSlideTitleBar = showTitleBar;
 	}
 	
 	public void setLayoutIds(int menuLayoutId, int contentLayoutId){
@@ -81,8 +82,8 @@ public class SlidingMenuActivity extends FragmentActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		if(!mShowTitleBar){ 
-			requestWindowFeature(Window.FEATURE_NO_TITLE);
+		if(!mSlideTitleBar){ 
+			
 			setContentView(R.layout.ws_munday_slideovermenu);
 			
 			ViewGroup menu = (ViewGroup) findViewById(R.id.ws_munday_slidingmenu_menu_frame);
@@ -125,9 +126,6 @@ public class SlidingMenuActivity extends FragmentActivity {
 		}
 		
 		initMenu(false);	
-		
-		
-		Log.d(LOG_TAG,"onCreate finished");
 		
 	}
 	
