@@ -104,7 +104,6 @@ public class SlidingMenuActivity extends FragmentActivity {
 			View allcontent = (ViewGroup)decor.getChildAt(0);
 			decor.removeView(allcontent);
 			
-			int statusbarHeight = (int)Utility.getStatusbarHeight(this);
 			
 			LayoutInflater li = getLayoutInflater();
 			
@@ -112,6 +111,8 @@ public class SlidingMenuActivity extends FragmentActivity {
 			
 			ViewGroup menu = (ViewGroup) main.findViewById(R.id.ws_munday_slidingmenu_menu_frame);
 			ViewGroup content = (ViewGroup) main.findViewById(R.id.ws_munday_slidingmenu_content_frame);
+			
+			int statusbarHeight = (int)Utility.getTopStatusBarHeight(getResources(), getWindowManager());
 			
 			ViewGroup mnu = (ViewGroup) li.inflate(mMenuLayoutId, null);
 			mnu.setPadding(mnu.getPaddingLeft(), mnu.getPaddingTop()+statusbarHeight, mnu.getPaddingRight(), mnu.getPaddingTop());
@@ -387,6 +388,8 @@ public class SlidingMenuActivity extends FragmentActivity {
 			toggleMenu();
 		}
 	}
+	
+	
 	
 }
 
