@@ -8,7 +8,6 @@ import android.content.res.Configuration;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 import android.view.Display;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -20,7 +19,6 @@ import android.view.animation.Animation.AnimationListener;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 public class SlidingMenuActivity extends FragmentActivity {
@@ -105,7 +103,6 @@ public class SlidingMenuActivity extends FragmentActivity {
 			View allcontent = (ViewGroup)decor.getChildAt(0);
 			decor.removeView(allcontent);
 			
-			
 			LayoutInflater li = getLayoutInflater();
 			
 			RelativeLayout main = (RelativeLayout) li.inflate(layout.ws_munday_slideovermenu, null);
@@ -163,7 +160,7 @@ public class SlidingMenuActivity extends FragmentActivity {
 			case MENU_TYPE_PARALLAX:
 				toggleSlidingMenu(mAnimationDuration/2);
 				break;
-			default:
+			default: /*MENU_TYPE_SLIDING*/
 				toggleSlidingMenu();
 				break;
 		}
@@ -314,10 +311,10 @@ public class SlidingMenuActivity extends FragmentActivity {
 			e.printStackTrace();
 		}
 		
-		int iconWidth = Utility.dipsToPixels(this, mMinMainWidthDps);
-		
-		//offset the width by 100 to leave room for the icon
-		mMenuWidth = Math.min(x - iconWidth, mMaxMenuWidthDps);
+
+		//make sure that the content doesn't slide all the way off screen
+		int minContentWidth = Utility.dipsToPixels(this, mMinMainWidthDps);
+		mMenuWidth = Math.min(x - minContentWidth, mMaxMenuWidthDps);
 		
 		//update sizes and margins for sliding menu
 		RelativeLayout.LayoutParams mp = new RelativeLayout.LayoutParams(mMenuWidth,RelativeLayout.LayoutParams.MATCH_PARENT);
@@ -371,11 +368,9 @@ public class SlidingMenuActivity extends FragmentActivity {
 			e.printStackTrace();
 		}
 		
-		//icon width with 2dp pad on each side
-		int iconWidth = Utility.dipsToPixels(this, mMinMainWidthDps);
-		
-		//offset the width by 100 to leave room for the icon
-		mMenuWidth = Math.min(x - iconWidth, mMaxMenuWidthDps);
+		//make sure that the content doesn't slide all the way off screen
+		int minContentWidth = Utility.dipsToPixels(this, mMinMainWidthDps);
+		mMenuWidth = Math.min(x - minContentWidth, mMaxMenuWidthDps);
 		
 		//update sizes and margins for sliding menu
 		menu.setLayoutParams(new RelativeLayout.LayoutParams(mMenuWidth,RelativeLayout.LayoutParams.MATCH_PARENT));
