@@ -2,8 +2,8 @@
 		android:id="@+id/ws_munday_slidingmenu_test_content" 
 		android:layout_height="fill_parent" 
 		android:layout_width="fill_parent"
-		android:background="#ffffff"
-        android:padding="5dp">
+		android:background="#fff"
+		android:padding="5dp">
     
     <TextView 
         android:id="@+id/content_content"

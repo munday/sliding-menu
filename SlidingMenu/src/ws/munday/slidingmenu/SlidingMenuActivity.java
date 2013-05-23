@@ -89,8 +89,8 @@ public class SlidingMenuActivity extends FragmentActivity {
 	
 			LayoutInflater li = getLayoutInflater();
 			
-			menu.addView(li.inflate(mMenuLayoutId, null));
 			content.addView(li.inflate(mContentLayoutId, null));
+			menu.addView(li.inflate(mMenuLayoutId, null));
 			
 			menu.setVisibility(View.GONE);
 			
@@ -100,7 +100,7 @@ public class SlidingMenuActivity extends FragmentActivity {
 			Window window = getWindow();
 			
 			ViewGroup decor = (ViewGroup) window.getDecorView();
-			View allcontent = (ViewGroup)decor.getChildAt(0);
+			ViewGroup allcontent = (ViewGroup)decor.getChildAt(0);
 			decor.removeView(allcontent);
 			
 			LayoutInflater li = getLayoutInflater();
@@ -115,6 +115,7 @@ public class SlidingMenuActivity extends FragmentActivity {
 			ViewGroup mnu = (ViewGroup) li.inflate(mMenuLayoutId, null);
 			mnu.setPadding(mnu.getPaddingLeft(), mnu.getPaddingTop()+statusbarHeight, mnu.getPaddingRight(), mnu.getPaddingTop());
 			content.addView(allcontent);
+			content.setBackgroundDrawable(Utility.getThemeBackground(this));
 			menu.addView(mnu);
 			
 			decor.addView(main);

@@ -2,8 +2,11 @@ package ws.munday.slidingmenu;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.WindowManager;
 
 public class Utility {
@@ -46,6 +49,7 @@ public class Utility {
 		  
 		  return result;
 	}
+		
 	
 	/***
 	 * The idea here is that devices at sw600 and up 
@@ -62,11 +66,26 @@ public class Utility {
 		
 		if(width>=600 || height>=600){
 			if (Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB && Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-			     return false;
-			}
+			     return false;			}
 		}
 		 
 		return true;
 	}
-	
+		
+	public static Drawable getThemeBackground(Context c){
+		
+		Drawable bg = null;
+		
+		TypedValue a = new TypedValue();
+		c.getTheme().resolveAttribute(android.R.attr.windowBackground, a, true);
+		if (a.type >= TypedValue.TYPE_FIRST_COLOR_INT && a.type <= TypedValue.TYPE_LAST_COLOR_INT) {
+		    // windowBackground is a color
+		    bg = new ColorDrawable(a.data);
+		} else {
+		    // windowBackground is not a color, probably a drawable
+		    bg = c.getResources().getDrawable(a.resourceId);
+		}
+		return bg;
+		
+	}
 }
