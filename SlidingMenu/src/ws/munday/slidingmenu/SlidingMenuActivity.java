@@ -84,6 +84,8 @@ public class SlidingMenuActivity extends FragmentActivity {
 			
 			setContentView(R.layout.ws_munday_slideovermenu);
 			
+			RelativeLayout main = (RelativeLayout) findViewById(R.id.ws_munday_slidingmenu_root_layout);
+			
 			ViewGroup menu = (ViewGroup) findViewById(R.id.ws_munday_slidingmenu_menu_frame);
 			ViewGroup content = (ViewGroup) findViewById(R.id.ws_munday_slidingmenu_content_frame);
 	
@@ -152,6 +154,29 @@ public class SlidingMenuActivity extends FragmentActivity {
 		}
 	}
 	
+	public void setMenuRightPosition(float right){
+	
+		FrameLayout menu = (FrameLayout) findViewById(R.id.ws_munday_slidingmenu_menu_frame);
+		FrameLayout root = (FrameLayout) findViewById(R.id.ws_munday_slidingmenu_content_frame);
+		menu.setVisibility(View.VISIBLE);
+		
+		//update sizes and margins for sliding menu
+		RelativeLayout.LayoutParams mp = new RelativeLayout.LayoutParams(mMenuWidth,RelativeLayout.LayoutParams.MATCH_PARENT);
+		RelativeLayout.LayoutParams rp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT ,RelativeLayout.LayoutParams.MATCH_PARENT);
+		
+		if(mType != MENU_TYPE_SLIDEOVER){
+			mp.leftMargin = (int)right - mMenuWidth;
+			mp.rightMargin = -(int)right; 
+		}
+		
+		rp.rightMargin = -(int)right;
+		rp.leftMargin = (int)right;
+		
+		menu.setLayoutParams(mp);
+		root.setLayoutParams(rp);
+				
+	}
+	
 	public void toggleMenu(){
 
 		switch(mType){
@@ -165,55 +190,69 @@ public class SlidingMenuActivity extends FragmentActivity {
 				toggleSlidingMenu();
 				break;
 		}
+		
+		
 	}
 	
-	public void toggleSlideOverMenu(){
+	public void toggleMenu(int start, int end){
+
+		switch(mType){
+			case MENU_TYPE_SLIDEOVER:
+				toggleSlideOverMenu(start, end);
+				break;
+			case MENU_TYPE_PARALLAX:
+				toggleSlidingMenu(start, end, mAnimationDuration/2);
+				break;
+			default: /*MENU_TYPE_SLIDING*/
+				toggleSlidingMenu(start, end, mAnimationDuration);
+				break;
+		}
 		
+	}
+	
+	public void toggleSlideOverMenu(final int start,final int end){
 		View v2 = findViewById(R.id.ws_munday_slidingmenu_content_frame);
 		v2.clearAnimation();
 		v2.setDrawingCacheEnabled(true);
 		
-		if(mIsLayoutShown){
-			MarginAnimation a = new MarginAnimation(v2, mMenuWidth, 0, mInterpolator);
-			a.setAnimationListener(new AnimationListener() {
-				public void onAnimationStart(Animation animation) {}				
-				public void onAnimationRepeat(Animation animation) {}
-				
-				public void onAnimationEnd(Animation animation) {
+		MarginAnimation a = new MarginAnimation(v2, start, end, mInterpolator);
+		a.setAnimationListener(new AnimationListener() {
+			public void onAnimationStart(Animation animation) {
+				if(end > 0){
+					ViewGroup v1 = (ViewGroup)findViewById(R.id.ws_munday_slidingmenu_menu_frame);
+					v1.setVisibility(View.VISIBLE);
+				}
+			}				
+			public void onAnimationRepeat(Animation animation) {}
+			
+			public void onAnimationEnd(Animation animation) {
+				if(end <= 0){
 					ViewGroup v1 = (ViewGroup)findViewById(R.id.ws_munday_slidingmenu_menu_frame);
 					v1.setVisibility(View.GONE);
 				}
-			});
+			}
+		});
 			
-			a.setDuration(mAnimationDuration);
-			v2.startAnimation(a);
-		}else{	
-			MarginAnimation a = new MarginAnimation(v2, 0, mMenuWidth, mInterpolator);
-			
-			a.setAnimationListener(new AnimationListener() {
-				public void onAnimationStart(Animation animation) {
-					ViewGroup v1 = (ViewGroup) findViewById(R.id.ws_munday_slidingmenu_menu_frame);
-					v1.setVisibility(View.VISIBLE);
-				}
-				
-				public void onAnimationRepeat(Animation animation) {}
-				public void onAnimationEnd(Animation animation) {}
-			});
-			
-			a.setDuration(mAnimationDuration);
-			v2.startAnimation(a);
+		a.setDuration(mAnimationDuration);
+		v2.startAnimation(a);
+
+		mIsLayoutShown = start < end;
+	}
+	
+	public void toggleSlideOverMenu(){
+		if(mIsLayoutShown){
+			toggleSlideOverMenu(mMenuWidth, 0);
+		}else{
+			toggleSlideOverMenu(0, mMenuWidth);
 		}
 		
-		mIsLayoutShown = !mIsLayoutShown;
-	
-	
 	}
 	
 	public void toggleSlidingMenu(){
 		toggleSlidingMenu(mAnimationDuration);
 	}
 	
-	public void toggleSlidingMenu(long menuAnimationDuration){
+	public void toggleSlidingMenu(final int start, final int end, long menuAnimationDuration){
 		
 		boolean parallax = menuAnimationDuration!=mAnimationDuration;
 		
@@ -225,51 +264,48 @@ public class SlidingMenuActivity extends FragmentActivity {
 		vMenu.clearAnimation();
 		vMenu.setDrawingCacheEnabled(true);
 		
-		if(mIsLayoutShown){
+		MarginAnimation a = new MarginAnimation(v2, start, end, mInterpolator);
+		a.setAnimationListener(new AnimationListener() {
+			public void onAnimationStart(Animation animation) {
+				if(end > 0){
+					ViewGroup v1 = (ViewGroup)findViewById(R.id.ws_munday_slidingmenu_menu_frame);
+					v1.setVisibility(View.VISIBLE);
+				}
+			}
+			public void onAnimationRepeat(Animation animation) {}
 			
-			MarginAnimation a = new MarginAnimation(v2, mMenuWidth, 0, mInterpolator);
-			a.setAnimationListener(new AnimationListener() {
-				public void onAnimationStart(Animation animation) {}
-				public void onAnimationRepeat(Animation animation) {}
-				
-				public void onAnimationEnd(Animation animation) {
+			public void onAnimationEnd(Animation animation) {
+				if(end <= 0){
 					ViewGroup v1 = (ViewGroup)findViewById(R.id.ws_munday_slidingmenu_menu_frame);
 					v1.setVisibility(View.GONE);
 				}
-			});
-			
-			a.setDuration(menuAnimationDuration);
-			v2.startAnimation(a);
-			
-			if(parallax){
-				MarginAnimation a2 = new MarginAnimation(vMenu, 0, -mMenuWidth, mInterpolator);
-				a2.setDuration(mAnimationDuration);
-				vMenu.startAnimation(a2);
 			}
-		}else{	
-			
-			MarginAnimation a = new MarginAnimation(v2, 0, mMenuWidth, mInterpolator);
-			a.setAnimationListener(new AnimationListener() {
-				public void onAnimationStart(Animation animation) {
-					ViewGroup v1 = (ViewGroup) findViewById(R.id.ws_munday_slidingmenu_menu_frame);
-					v1.setVisibility(View.VISIBLE);
-				}
-				
-				public void onAnimationRepeat(Animation animation) {}
-				public void onAnimationEnd(Animation animation) {}
-			});
-			
-			a.setDuration(mAnimationDuration);
-			v2.startAnimation(a);
-			
-			if(parallax){
-				MarginAnimation a2 = new MarginAnimation(vMenu, -mMenuWidth, 0, mInterpolator);
-				a2.setDuration(menuAnimationDuration);
-				vMenu.startAnimation(a2);
-			}
-		}
+		});
 		
-		mIsLayoutShown = !mIsLayoutShown;
+		a.setDuration(mAnimationDuration);
+		v2.startAnimation(a);
+		
+		if(parallax){
+			MarginAnimation a2 = null;
+			if(start > end){
+				a2 = new MarginAnimation(vMenu, end, -start, mInterpolator);
+			} else {
+				a2 = new MarginAnimation(vMenu, -start, end, mInterpolator);
+			}
+			a2.setDuration(menuAnimationDuration);
+			vMenu.startAnimation(a2);
+		}
+
+		mIsLayoutShown = start < end;
+	}
+	
+	public void toggleSlidingMenu(long menuAnimationDuration){
+		
+		if(mIsLayoutShown){
+			toggleSlidingMenu(mMenuWidth, 0, menuAnimationDuration);
+		}else{
+			toggleSlidingMenu(0, mMenuWidth, menuAnimationDuration);
+		}
 	
 	}
 	
@@ -375,11 +411,14 @@ public class SlidingMenuActivity extends FragmentActivity {
 		
 		//update sizes and margins for sliding menu
 		menu.setLayoutParams(new RelativeLayout.LayoutParams(mMenuWidth,RelativeLayout.LayoutParams.MATCH_PARENT));
-		//menu.requestLayout();
+		menu.requestLayout();
 		
 		if(isConfigChange){
-			mIsLayoutShown = !mIsLayoutShown;
-			toggleMenu();
+			if(mIsLayoutShown){
+				setMenuRightPosition(mMenuWidth);
+			}else{
+				setMenuRightPosition(0);
+			}
 		}
 	}
 	
