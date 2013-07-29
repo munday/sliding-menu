@@ -21,6 +21,10 @@ import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
+/**
+ * A FragmentActivity subclass that adds a sliding menu.
+ */
+
 public class SlidingMenuActivity extends FragmentActivity {
 
 	public static final int MENU_TYPE_SLIDING = 1;
@@ -42,38 +46,76 @@ public class SlidingMenuActivity extends FragmentActivity {
 	public SlidingMenuActivity(){
 		this(true);
 	}
-	
-	public SlidingMenuActivity(boolean slideTitleBar){
+
+    /**
+     * Constructor that adds the option of sliding the title bar away with the content when the menu
+     * is displayed.
+     * @param slideTitleBar
+     */
+    public SlidingMenuActivity(boolean slideTitleBar){
 		mSlideTitleBar = slideTitleBar;
 	}
-	
+
+    /**
+     * Sets the layoutids for the menu and main content areas.
+     * This must be called before onCreate.
+     * @param menuLayoutId
+     * @param contentLayoutId
+     */
 	public void setLayoutIds(int menuLayoutId, int contentLayoutId){
 		mMenuLayoutId = menuLayoutId;
 		mContentLayoutId = contentLayoutId;
 	}
-	
+
+    /**
+     * sets the length in milliseconds in which the open and close animation should complete.
+     * @param duration
+     */
 	public void setAnimationDuration(long duration){
 		mAnimationDuration = duration;
 	}
-	
+
+    /**
+     * Sets the maximum width in dps for the menu area.
+     * @param width
+     */
 	public void setMaxMenuWidth(int width){
 		mMaxMenuWidthDps = width;
 	}
-	
+
+    /**
+     * Sets the minimum width of the content area when the menu is displayed.
+     * @param width
+     */
 	public void setMinContentWidth(int width){
 		mMinMainWidthDps = width;
 	}
-	
+
+    /**
+     * Sets the open/close animation type.
+     * @param type
+     *      {@link SlidingMenuActivity#MENU_TYPE_SLIDING},
+     *      {@link SlidingMenuActivity#MENU_TYPE_SLIDEOVER} or
+     *      {@link SlidingMenuActivity#MENU_TYPE_PARALLAX}
+     */
 	public void setAnimationType(int type){
 		mType = type;
 	}
-	
+
+    /**
+     * Gets the interpolator for the open/close animation.
+     * @return
+     */
 	public Interpolator getInterpolator(){
 		return mInterpolator;
 	}
-	
-	public void setInterpolator(Interpolator i){
-		mInterpolator = i;
+
+    /**
+     * Sets the interpolator for the open/close animation.
+     * @param interpolator
+     */
+	public void setInterpolator(Interpolator interpolator){
+		mInterpolator = interpolator;
 	}
 	
 	@Override
@@ -81,7 +123,10 @@ public class SlidingMenuActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		
 		if(!mSlideTitleBar){ 
-			
+
+            //Do not move the title bar with the content.
+            //Just set our root as the content view.
+
 			setContentView(R.layout.ws_munday_slideovermenu);
 			
 			RelativeLayout main = (RelativeLayout) findViewById(R.id.ws_munday_slidingmenu_root_layout);
@@ -97,13 +142,17 @@ public class SlidingMenuActivity extends FragmentActivity {
 			menu.setVisibility(View.GONE);
 			
 		}else{
-			
+
+            //Move the title bar with the content.
+            //Replace the first child of the decor view (the app root view) with our view
+            //and re-attach it to our view.
+
 			setContentView(mContentLayoutId);
 			Window window = getWindow();
 			
 			ViewGroup decor = (ViewGroup) window.getDecorView();
-			ViewGroup allcontent = (ViewGroup)decor.getChildAt(0);
-			decor.removeView(allcontent);
+			ViewGroup allContent = (ViewGroup)decor.getChildAt(0);
+			decor.removeView(allContent);
 			
 			LayoutInflater li = getLayoutInflater();
 			
@@ -116,7 +165,7 @@ public class SlidingMenuActivity extends FragmentActivity {
 			
 			ViewGroup mnu = (ViewGroup) li.inflate(mMenuLayoutId, null);
 			mnu.setPadding(mnu.getPaddingLeft(), mnu.getPaddingTop()+statusbarHeight, mnu.getPaddingRight(), mnu.getPaddingTop());
-			content.addView(allcontent);
+			content.addView(allContent);
 			content.setBackgroundDrawable(Utility.getThemeBackground(this));
 			menu.addView(mnu);
 			
@@ -137,7 +186,10 @@ public class SlidingMenuActivity extends FragmentActivity {
 		
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-	    switch(keyCode){
+
+        //Toggle the menu on menu key press.
+
+        switch(keyCode){
 	    	case KeyEvent.KEYCODE_MENU:
 	    		toggleMenu();
 	    		return true;
@@ -147,13 +199,20 @@ public class SlidingMenuActivity extends FragmentActivity {
 	
 	@Override
 	public void onBackPressed() {
-		if(mIsLayoutShown){
+
+        //Close the menu on back press if it is open.
+
+        if(mIsLayoutShown){
 			toggleMenu();
 		}else{
 			super.onBackPressed();
 		}
 	}
-	
+
+    /**
+     * Sets the position of the right hand side of the menu.
+     * @param right
+     */
 	public void setMenuRightPosition(float right){
 	
 		FrameLayout menu = (FrameLayout) findViewById(R.id.ws_munday_slidingmenu_menu_frame);
@@ -176,7 +235,10 @@ public class SlidingMenuActivity extends FragmentActivity {
 		root.setLayoutParams(rp);
 				
 	}
-	
+
+    /**
+     * Toggles the menu.
+     */
 	public void toggleMenu(){
 
 		switch(mType){
@@ -193,24 +255,34 @@ public class SlidingMenuActivity extends FragmentActivity {
 		
 		
 	}
-	
-	public void toggleMenu(int start, int end){
+
+    /**
+     * Animates the menu from a given position to another.
+     * @param start the position to start the animation.
+     * @param end the position to end the animation.
+     */
+	public void AnimateMenuPosition(final int start,final int end){
 
 		switch(mType){
 			case MENU_TYPE_SLIDEOVER:
-				toggleSlideOverMenu(start, end);
+				animateSlideOverMenuPosition(start, end);
 				break;
 			case MENU_TYPE_PARALLAX:
-				toggleSlidingMenu(start, end, mAnimationDuration/2);
+				animateSlidingMenuPosition(start, end, mAnimationDuration / 2);
 				break;
 			default: /*MENU_TYPE_SLIDING*/
-				toggleSlidingMenu(start, end, mAnimationDuration);
+				animateSlidingMenuPosition(start, end, mAnimationDuration);
 				break;
 		}
 		
 	}
-	
-	public void toggleSlideOverMenu(final int start,final int end){
+
+    /**
+     * Animates the content over top of a fixed position menu.
+     * @param start
+     * @param end
+     */
+    public void animateSlideOverMenuPosition(final int start, final int end){
 		View v2 = findViewById(R.id.ws_munday_slidingmenu_content_frame);
 		v2.clearAnimation();
 		v2.setDrawingCacheEnabled(true);
@@ -220,7 +292,8 @@ public class SlidingMenuActivity extends FragmentActivity {
 			public void onAnimationStart(Animation animation) {
 				if(end > 0){
 					ViewGroup v1 = (ViewGroup)findViewById(R.id.ws_munday_slidingmenu_menu_frame);
-					v1.setVisibility(View.VISIBLE);
+					//unhide menu.
+                    v1.setVisibility(View.VISIBLE);
 				}
 			}				
 			public void onAnimationRepeat(Animation animation) {}
@@ -228,7 +301,8 @@ public class SlidingMenuActivity extends FragmentActivity {
 			public void onAnimationEnd(Animation animation) {
 				if(end <= 0){
 					ViewGroup v1 = (ViewGroup)findViewById(R.id.ws_munday_slidingmenu_menu_frame);
-					v1.setVisibility(View.GONE);
+					//Hide the menu to reduce overdraw.
+                    v1.setVisibility(View.GONE);
 				}
 			}
 		});
@@ -238,21 +312,29 @@ public class SlidingMenuActivity extends FragmentActivity {
 
 		mIsLayoutShown = start < end;
 	}
-	
-	public void toggleSlideOverMenu(){
+
+    /**
+     * Convenience function to toggle a slide over menu all the way open or closed.
+     */
+    public void toggleSlideOverMenu(){
 		if(mIsLayoutShown){
-			toggleSlideOverMenu(mMenuWidth, 0);
+			animateSlideOverMenuPosition(mMenuWidth, 0);
 		}else{
-			toggleSlideOverMenu(0, mMenuWidth);
+			animateSlideOverMenuPosition(0, mMenuWidth);
 		}
 		
 	}
-	
-	public void toggleSlidingMenu(){
-		toggleSlidingMenu(mAnimationDuration);
-	}
-	
-	public void toggleSlidingMenu(final int start, final int end, long menuAnimationDuration){
+
+    /**
+     * Animates both the menu and content areas independently.
+     * @param start
+     * @param end
+     * @param menuAnimationDuration the time in millis in which the menu animation should finish.
+     *                              If this value is different from the one set using
+     *                              {@link ws.munday.slidingmenu.SlidingMenuActivity#setAnimationDuration(long)}
+     *                              then the menu is considered parralax.
+     */
+	public void animateSlidingMenuPosition(final int start, final int end, long menuAnimationDuration){
 		
 		boolean parallax = menuAnimationDuration!=mAnimationDuration;
 		
@@ -298,13 +380,24 @@ public class SlidingMenuActivity extends FragmentActivity {
 
 		mIsLayoutShown = start < end;
 	}
-	
+
+    /**
+     * Convenience function for toggling a standard sliding menu.
+     */
+    public void toggleSlidingMenu(){
+        toggleSlidingMenu(mAnimationDuration);
+    }
+
+    /**
+     * Convenience function for toggling a parallax menu.
+     * @param menuAnimationDuration
+     */
 	public void toggleSlidingMenu(long menuAnimationDuration){
 		
 		if(mIsLayoutShown){
-			toggleSlidingMenu(mMenuWidth, 0, menuAnimationDuration);
+			animateSlidingMenuPosition(mMenuWidth, 0, menuAnimationDuration);
 		}else{
-			toggleSlidingMenu(0, mMenuWidth, menuAnimationDuration);
+			animateSlidingMenuPosition(0, mMenuWidth, menuAnimationDuration);
 		}
 	
 	}

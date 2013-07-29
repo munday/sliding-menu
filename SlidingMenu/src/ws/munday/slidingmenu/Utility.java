@@ -55,7 +55,7 @@ public class Utility {
 	 * The idea here is that devices at sw600 and up 
 	 * and between honeycomb and jelly bean have the combined bottom
 	 * status bar and no top bar.
-	 * @return boolean wheather or not the device has a status bar at the top.
+	 * @return boolean whether or not the device has a status bar at the top.
 	 */
 	public static boolean isStatusBarAtTop(WindowManager m){
 		
