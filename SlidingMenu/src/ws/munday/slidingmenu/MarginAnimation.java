@@ -8,31 +8,31 @@ import android.widget.RelativeLayout.LayoutParams;
 
 public class MarginAnimation extends Animation {
 
-	private int mEnd;
-	private int mStart;
-	private int mChange;
-	private View mView;
-	
-	public MarginAnimation(View v, int marginStart, int marginEnd, Interpolator i){
+    private int mEnd;
+    private int mStart;
+    private int mChange;
+    private View mView;
 
-		mStart = marginStart;
-		mEnd = marginEnd;
-		mView = v;
-		
-		mChange = mEnd - mStart;
-		setInterpolator(i);
-		
-	}
+    public MarginAnimation(View v, int marginStart, int marginEnd, Interpolator i) {
 
-	@Override
-	protected void applyTransformation(float interpolatedTime, Transformation t) {
+        mStart = marginStart;
+        mEnd = marginEnd;
+        mView = v;
 
-		float change = mChange * interpolatedTime;
-		LayoutParams lp = (LayoutParams) mView.getLayoutParams();
-		lp.setMargins( (int)(mStart + change), 0, -(int)(mStart + change), 0);
-		mView.setLayoutParams(lp);
-		
-		super.applyTransformation(interpolatedTime, t);
-	}
+        mChange = mEnd - mStart;
+        setInterpolator(i);
+
+    }
+
+    @Override
+    protected void applyTransformation(float interpolatedTime, Transformation t) {
+
+        float change = mChange * interpolatedTime;
+        LayoutParams lp = (LayoutParams) mView.getLayoutParams();
+        lp.setMargins((int) (mStart + change), 0, -(int) (mStart + change), 0);
+        mView.setLayoutParams(lp);
+
+        super.applyTransformation(interpolatedTime, t);
+    }
 
 }
