@@ -33,6 +33,8 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
     public static final int MENU_TYPE_SLIDEOVER = 2;
     public static final int MENU_TYPE_PARALLAX = 3;
 
+    public static final int DEFAULT_GRABBER_TOP_OFFSET = 150;
+
     private boolean mIsMenuOpen = false;
     private int mMenuWidth;
     public static final String LOG_TAG = "SlidingMenuActivity";
@@ -44,7 +46,9 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
     private Interpolator mInterpolator = new DecelerateInterpolator(1.2f);
     private int mType = MENU_TYPE_SLIDING;
     private boolean mSlideTitleBar = true;
-    private int mGrabberSize = 60;
+    private int mGrabberSize = 75;
+    private int mGrabberTopOffset = 0;
+
     private ViewGroup mRootLayout;
 
     private boolean mMoving = false;
@@ -64,6 +68,9 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
      */
     public SlidingMenuActivity(boolean slideTitleBar) {
         mSlideTitleBar = slideTitleBar;
+        if(slideTitleBar){
+            mGrabberTopOffset = DEFAULT_GRABBER_TOP_OFFSET;
+        }
     }
 
     /**
@@ -80,6 +87,16 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
 
     public void setGrabberSize(int size) {
         mGrabberSize = size;
+    }
+
+    /**
+     * Sets the amount of space from the top of the screen that is ungrabbable (Dragging to open
+     * or close above this position will not work). This setting is useful when you have clickable
+     * buttons on the left side of the actionbar.
+     * @param offset
+     */
+    public void setGrabberTopOffset(int offset){
+        mGrabberTopOffset = offset;
     }
 
     /**
@@ -156,9 +173,14 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
             ViewGroup content = (ViewGroup) findViewById(R.id.ws_munday_slidingmenu_content_frame);
 
             LayoutInflater li = getLayoutInflater();
+            View contentView = li.inflate(mContentLayoutId, null);
+            View menuView = li.inflate(mMenuLayoutId, null);
 
-            content.addView(li.inflate(mContentLayoutId, null));
-            menu.addView(li.inflate(mMenuLayoutId, null));
+            if(contentView == null) throw new IllegalArgumentException("Content layout id is not set.");
+            if(menuView == null) throw new IllegalArgumentException("Menu layout id is not set.");
+
+            content.addView(contentView);
+            menu.addView(menuView);
 
             menu.setVisibility(View.GONE);
 
@@ -173,19 +195,23 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
 
             ViewGroup decor = (ViewGroup) window.getDecorView();
             ViewGroup allContent = (ViewGroup) decor.getChildAt(0);
+            if(allContent == null) throw new IllegalArgumentException("Can't find window content.");
             decor.removeView(allContent);
 
             LayoutInflater li = getLayoutInflater();
-
             mRootLayout = (ViewGroup) li.inflate(layout.ws_munday_slideovermenu, null);
+            if(mRootLayout==null) return;
             mRootLayout.setOnTouchListener(this);
 
             ViewGroup menu = (ViewGroup) mRootLayout.findViewById(R.id.ws_munday_slidingmenu_menu_frame);
             ViewGroup content = (ViewGroup) mRootLayout.findViewById(R.id.ws_munday_slidingmenu_content_frame);
 
-            int statusbarHeight = (int) Utility.getTopStatusBarHeight(getResources(), getWindowManager());
+            int statusbarHeight = Utility.getTopStatusBarHeight(getResources(), getWindowManager());
 
             ViewGroup mnu = (ViewGroup) li.inflate(mMenuLayoutId, null);
+
+            if(mnu == null) throw new IllegalArgumentException("Menu layout id is not set.");
+
             mnu.setPadding(mnu.getPaddingLeft(), mnu.getPaddingTop() + statusbarHeight, mnu.getPaddingRight(), mnu.getPaddingTop());
             content.addView(allContent);
             content.setBackgroundDrawable(Utility.getThemeBackground(this));
@@ -250,8 +276,12 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
 
                 // the start point will either be the x coordinate or the menu width
                 final int x = (int) motionEvent.getX();
+                final int y = (int) motionEvent.getY();
+                if(y < mGrabberTopOffset) return false;
+
                 mOriginX = Math.min(x, mMenuWidth);
                 mCurrentX = mOriginX;
+
 
                 if (mIsMenuOpen && x >= mMenuWidth - mGrabberSize && x <= mMenuWidth + mGrabberSize) {
                     // if the user begins the drag on the right edge of the open menu, assume that
@@ -274,11 +304,15 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
                     // keep track of the current and last positions
                     setMenuRightPosition(mCurrentX);
                     mLastX = mCurrentX;
-                    mCurrentX = Math.min((int) motionEvent.getX(), mMenuWidth);
+                    int nextX = (int) motionEvent.getX();
+                    mCurrentX = Math.min(nextX, mMenuWidth);
                     return true;
                 }
 
+                return false;
+
             case MotionEvent.ACTION_UP:
+
 
                 if (mMoving) {
 
@@ -293,14 +327,16 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
                     } else {
                         // there is no motion (the last position and current position are equal)
                         // if the move has passed 50% of the menu width, open it. Otherwise, close it.
-                        AnimateMenuPosition(mCurrentX, (mCurrentX > mMenuWidth / 2 ? mMenuWidth : 0));
+                        AnimateMenuPosition(mCurrentX, (mCurrentX > mMenuWidth / 4 ? mMenuWidth : 0));
                     }
 
-                    mOriginX = mCurrentX = 0;
                     mMoving = false;
+                    mOriginX = mCurrentX = 0;
 
                     return true;
                 }
+
+                mOriginX = mCurrentX = 0;
 
         }
 
