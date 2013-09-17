@@ -46,6 +46,7 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
     private Interpolator mInterpolator = new DecelerateInterpolator(1.2f);
     private int mType = MENU_TYPE_SLIDING;
     private boolean mSlideTitleBar = true;
+    private boolean mDraggingEnabled = false;
     private int mGrabberSize = 75;
     private int mGrabberTopOffset = 0;
 
@@ -85,8 +86,28 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
         mContentLayoutId = contentLayoutId;
     }
 
+    public void setDraggingEnabled(boolean enabled){
+        mDraggingEnabled = enabled;
+    }
+
+    public boolean getDraggingEnabled(){
+        return mDraggingEnabled;
+    }
+
+    /**
+     * Sets the hit size for grabbing and dragging the menu opened/closed
+     * @param size
+     */
     public void setGrabberSize(int size) {
         mGrabberSize = size;
+    }
+
+    /**
+     * Gets the hit size for grabbing and dragging
+     * @return the size
+     */
+    public int getGrabberSize(){
+        return mGrabberSize;
     }
 
     /**
@@ -100,12 +121,28 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
     }
 
     /**
-     * sets the length in milliseconds in which the open and close animation should complete.
+     * Gets the undraggable offset from the top of the screen
+     * @return the offset
+     */
+    public int gerGrabberTopOffset(){
+        return mGrabberTopOffset;
+    }
+
+    /**
+     * Sets the length in milliseconds in which the open and close animation should complete.
      *
      * @param duration
      */
     public void setAnimationDuration(long duration) {
         mAnimationDuration = duration;
+    }
+
+    /**
+     * Gets the animation duration
+     * @return
+     */
+    public long getAnimationDuration(){
+        return mAnimationDuration;
     }
 
     /**
@@ -118,12 +155,28 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
     }
 
     /**
+     * Gets the maximum menu width in dps
+     * @return
+     */
+    public int getMaxMenuWidth(){
+        return mMaxMenuWidthDps;
+    }
+
+    /**
      * Sets the minimum width of the content area when the menu is displayed.
      *
      * @param width
      */
     public void setMinContentWidth(int width) {
         mMinMainWidthDps = width;
+    }
+
+    /**
+     * Gets the minimum menu width in dps
+     * @return
+     */
+    public int getMinContentWidth() {
+        return mMinMainWidthDps;
     }
 
     /**
@@ -138,12 +191,14 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
     }
 
     /**
-     * Gets the interpolator for the open/close animation.
+     * Gets the open/close animation type
+     * @return {@link SlidingMenuActivity#MENU_TYPE_SLIDING},
+     *         {@link SlidingMenuActivity#MENU_TYPE_SLIDEOVER} or
+     *         {@link SlidingMenuActivity#MENU_TYPE_PARALLAX}
      *
-     * @return
      */
-    public Interpolator getInterpolator() {
-        return mInterpolator;
+    public int getAnimationType(){
+        return mType;
     }
 
     /**
@@ -154,6 +209,16 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
     public void setInterpolator(Interpolator interpolator) {
         mInterpolator = interpolator;
     }
+
+    /**
+     * Gets the interpolator for the open/close animation.
+     *
+     * @return
+     */
+    public Interpolator getInterpolator() {
+        return mInterpolator;
+    }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -270,6 +335,8 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
 
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
+
+        if(!mDraggingEnabled) return false;
 
         switch (motionEvent.getAction()) {
             case MotionEvent.ACTION_DOWN:
