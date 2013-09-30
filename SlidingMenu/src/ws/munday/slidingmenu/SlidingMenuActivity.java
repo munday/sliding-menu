@@ -1,7 +1,9 @@
 package ws.munday.slidingmenu;
 
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.Display;
@@ -34,20 +36,28 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
     public static final int MENU_TYPE_PARALLAX = 3;
 
     public static final int DEFAULT_GRABBER_TOP_OFFSET = 150;
+    public static final int DEFAULT_GRABBER_SIZE = 75;
+    public static final int DEFAULT_SHADOW_WIDTH = 25;
+    public static final int DEFAULT_ANIMATION_DURATION = 400;
+    public static final int DEFAULT_MAX_MENU_WIDTH_DPS = 375;
+    public static final int DEFAULT_MIN_CONTENT_WIDTH_DPS = 50;
+
 
     private boolean mIsMenuOpen = false;
     private int mMenuWidth;
     public static final String LOG_TAG = "SlidingMenuActivity";
     private int mMenuLayoutId;
     private int mContentLayoutId;
-    private long mAnimationDuration = 400;
-    private int mMaxMenuWidthDps = 375;
-    private int mMinMainWidthDps = 50;
+    private long mAnimationDuration = DEFAULT_ANIMATION_DURATION;
+    private int mMaxMenuWidthDps = DEFAULT_MAX_MENU_WIDTH_DPS;
+    private int mMinContentWidthDps = DEFAULT_MIN_CONTENT_WIDTH_DPS;
+    private int mShadowWidth = DEFAULT_SHADOW_WIDTH;
     private Interpolator mInterpolator = new DecelerateInterpolator(1.2f);
     private int mType = MENU_TYPE_SLIDING;
     private boolean mSlideTitleBar = true;
     private boolean mDraggingEnabled = false;
-    private int mGrabberSize = 75;
+    private boolean mShadowEnabled = true;
+    private int mGrabberSize = DEFAULT_GRABBER_SIZE;
     private int mGrabberTopOffset = 0;
 
     private ViewGroup mRootLayout;
@@ -92,6 +102,14 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
 
     public boolean getDraggingEnabled(){
         return mDraggingEnabled;
+    }
+
+    public void setShadowEnabled(boolean enabled){
+        mShadowEnabled = enabled;
+    }
+
+    public boolean getShadowEnabled(){
+        return mShadowEnabled;
     }
 
     /**
@@ -168,7 +186,7 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
      * @param width
      */
     public void setMinContentWidth(int width) {
-        mMinMainWidthDps = width;
+        mMinContentWidthDps = width;
     }
 
     /**
@@ -176,7 +194,7 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
      * @return
      */
     public int getMinContentWidth() {
-        return mMinMainWidthDps;
+        return mMinContentWidthDps;
     }
 
     /**
@@ -287,8 +305,28 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
 
         }
 
+        setupShadow(mShadowWidth);
+
         initMenu(false);
 
+    }
+
+    public void setupShadow(int width) {
+        mShadowWidth = width;
+        View shadowView = findViewById(R.id.ws_munday_slidingmenu_shadow_frame);
+
+        if(shadowView == null) return;
+
+        GradientDrawable shadow = new GradientDrawable(GradientDrawable.Orientation.RIGHT_LEFT, new int[] {Color.BLACK, Color.TRANSPARENT});
+        ViewGroup.LayoutParams params = shadowView.getLayoutParams();
+        params.width = width;
+        shadowView.setLayoutParams(params);
+        shadowView.setBackgroundDrawable(shadow);
+        if (mShadowEnabled) {
+            shadowView.setVisibility(View.VISIBLE);
+        } else {
+            shadowView.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -422,11 +460,13 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
 
         FrameLayout menu = (FrameLayout) findViewById(R.id.ws_munday_slidingmenu_menu_frame);
         FrameLayout root = (FrameLayout) findViewById(R.id.ws_munday_slidingmenu_content_frame);
+        FrameLayout shadow = (FrameLayout) findViewById(R.id.ws_munday_slidingmenu_shadow_frame);
         menu.setVisibility(View.VISIBLE);
 
         //update sizes and margins for sliding menu
         RelativeLayout.LayoutParams mp = new RelativeLayout.LayoutParams(mMenuWidth, RelativeLayout.LayoutParams.MATCH_PARENT);
         RelativeLayout.LayoutParams rp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+        RelativeLayout.LayoutParams sp = new RelativeLayout.LayoutParams(30, RelativeLayout.LayoutParams.MATCH_PARENT);
 
         if (mType != MENU_TYPE_SLIDEOVER) {
             mp.leftMargin = (int) right - mMenuWidth;
@@ -435,10 +475,12 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
 
         rp.rightMargin = -(int) right;
         rp.leftMargin = (int) right;
+        sp.rightMargin = -(int) right - mShadowWidth;
+        sp.leftMargin = (int) right - mShadowWidth;
 
         menu.setLayoutParams(mp);
         root.setLayoutParams(rp);
-
+        shadow.setLayoutParams(sp);
     }
 
     /**
@@ -490,12 +532,12 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
      * @param end
      */
     public void animateSlideOverMenuPosition(final int start, final int end) {
-        View v2 = findViewById(R.id.ws_munday_slidingmenu_content_frame);
-        v2.clearAnimation();
-        v2.setDrawingCacheEnabled(true);
+        View contentView = findViewById(R.id.ws_munday_slidingmenu_content_frame);
+        contentView.clearAnimation();
+        contentView.setDrawingCacheEnabled(true);
 
-        MarginAnimation a = new MarginAnimation(v2, start, end, mInterpolator);
-        a.setAnimationListener(new AnimationListener() {
+        MarginAnimation contentAnimation = new MarginAnimation(contentView, start, end, mInterpolator);
+        contentAnimation.setAnimationListener(new AnimationListener() {
             public void onAnimationStart(Animation animation) {
                 if (end > 0) {
                     ViewGroup v1 = (ViewGroup) findViewById(R.id.ws_munday_slidingmenu_menu_frame);
@@ -516,8 +558,19 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
             }
         });
 
-        a.setDuration(mAnimationDuration);
-        v2.startAnimation(a);
+        contentAnimation.setDuration(mAnimationDuration);
+        contentView.startAnimation(contentAnimation);
+
+        View shadowView = findViewById(R.id.ws_munday_slidingmenu_shadow_frame);
+        shadowView.clearAnimation();
+        shadowView.setDrawingCacheEnabled(true);
+
+        int shadowStart = start - mShadowWidth;
+        int shadowEnd = end - mShadowWidth;
+
+        MarginAnimation shadowAnimation = new MarginAnimation(shadowView, shadowStart, shadowEnd, mInterpolator);
+        shadowAnimation.setDuration(mAnimationDuration);
+        shadowView.startAnimation(shadowAnimation);
 
         mIsMenuOpen = start <= end;
     }
@@ -548,16 +601,12 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
 
         boolean parallax = menuAnimationDuration != mAnimationDuration;
 
-        View v2 = findViewById(R.id.ws_munday_slidingmenu_content_frame);
-        v2.clearAnimation();
-        v2.setDrawingCacheEnabled(true);
+        View contentView = findViewById(R.id.ws_munday_slidingmenu_content_frame);
+        contentView.clearAnimation();
+        contentView.setDrawingCacheEnabled(true);
 
-        View vMenu = findViewById(R.id.ws_munday_slidingmenu_menu_frame);
-        vMenu.clearAnimation();
-        vMenu.setDrawingCacheEnabled(true);
-
-        MarginAnimation a = new MarginAnimation(v2, start, end, mInterpolator);
-        a.setAnimationListener(new AnimationListener() {
+        MarginAnimation contentAnimation = new MarginAnimation(contentView, start, end, mInterpolator);
+        contentAnimation.setAnimationListener(new AnimationListener() {
             public void onAnimationStart(Animation animation) {
                 if (end > 0) {
                     ViewGroup v1 = (ViewGroup) findViewById(R.id.ws_munday_slidingmenu_menu_frame);
@@ -576,19 +625,34 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
             }
         });
 
-        a.setDuration(mAnimationDuration);
-        v2.startAnimation(a);
+        contentAnimation.setDuration(mAnimationDuration);
+        contentView.startAnimation(contentAnimation);
 
-        MarginAnimation a2;
+        MarginAnimation menuAnimation;
+        View menuView = findViewById(R.id.ws_munday_slidingmenu_menu_frame);
+        menuView.clearAnimation();
+        menuView.setDrawingCacheEnabled(true);
 
-        a2 = new MarginAnimation(vMenu, start - mMenuWidth, end - mMenuWidth, mInterpolator);
+
+        menuAnimation = new MarginAnimation(menuView, start - mMenuWidth, end - mMenuWidth, mInterpolator);
         if(start > end && parallax) {
             long multiplier = Math.max(menuAnimationDuration / mAnimationDuration, 1 );
-            a2.setDuration(menuAnimationDuration/multiplier);
+            menuAnimation.setDuration(menuAnimationDuration / multiplier);
         }else{
-            a2.setDuration(menuAnimationDuration);
+            menuAnimation.setDuration(menuAnimationDuration);
         }
-        vMenu.startAnimation(a2);
+        menuView.startAnimation(menuAnimation);
+
+        View shadowView = findViewById(R.id.ws_munday_slidingmenu_shadow_frame);
+        shadowView.clearAnimation();
+        shadowView.setDrawingCacheEnabled(true);
+
+        int shadowStart = start - mShadowWidth;
+        int shadowEnd = end - mShadowWidth;
+
+        MarginAnimation shadowAnimation = new MarginAnimation(shadowView, shadowStart, shadowEnd, mInterpolator);
+        shadowAnimation.setDuration(mAnimationDuration);
+        shadowView.startAnimation(shadowAnimation);
 
 
         mIsMenuOpen = start <= end;
@@ -636,6 +700,7 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
         //get menu and main layout
         FrameLayout menu = (FrameLayout) findViewById(R.id.ws_munday_slidingmenu_menu_frame);
         FrameLayout root = (FrameLayout) findViewById(R.id.ws_munday_slidingmenu_content_frame);
+        FrameLayout shadow = (FrameLayout) findViewById(R.id.ws_munday_slidingmenu_shadow_frame);
 
         //get screen width
         Display display = getWindowManager().getDefaultDisplay();
@@ -657,27 +722,34 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
 
 
         //make sure that the content doesn't slide all the way off screen
-        int minContentWidth = Utility.dipsToPixels(this, mMinMainWidthDps);
+        int minContentWidth = Utility.dipsToPixels(this, mMinContentWidthDps);
         mMenuWidth = Math.min(x - minContentWidth, mMaxMenuWidthDps);
 
         //update sizes and margins for sliding menu
         RelativeLayout.LayoutParams mp = new RelativeLayout.LayoutParams(mMenuWidth, RelativeLayout.LayoutParams.MATCH_PARENT);
         RelativeLayout.LayoutParams rp = new RelativeLayout.LayoutParams(x, RelativeLayout.LayoutParams.MATCH_PARENT);
+        RelativeLayout.LayoutParams sp = new RelativeLayout.LayoutParams(x - 30, RelativeLayout.LayoutParams.MATCH_PARENT);
 
         if (isConfigChange) {
             if (mIsMenuOpen) {
                 mp.leftMargin = 0;
                 rp.leftMargin = mMenuWidth;
                 rp.rightMargin = -mMenuWidth;
+                sp.leftMargin = mMenuWidth - mShadowWidth;
+                sp.rightMargin = -mMenuWidth - mShadowWidth;
             } else {
                 mp.leftMargin = -mMenuWidth;
                 rp.leftMargin = 0;
                 rp.rightMargin = 0;
+                sp.leftMargin = -mShadowWidth;
+                sp.rightMargin = -mShadowWidth;
             }
         } else {
             mp.leftMargin = -mMenuWidth;
             rp.leftMargin = 0;
             rp.rightMargin = -mMenuWidth;
+            sp.leftMargin = -mShadowWidth;
+            sp.rightMargin = -mMenuWidth - mShadowWidth;
             mIsMenuOpen = false;
         }
 
@@ -686,6 +758,9 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
 
         root.setLayoutParams(rp);
         root.requestLayout();
+
+        shadow.setLayoutParams(sp);
+        shadow.requestLayout();
     }
 
     @SuppressWarnings("deprecation")
@@ -713,7 +788,7 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
         }
 
         //make sure that the content doesn't slide all the way off screen
-        int minContentWidth = Utility.dipsToPixels(this, mMinMainWidthDps);
+        int minContentWidth = Utility.dipsToPixels(this, mMinContentWidthDps);
         mMenuWidth = Math.min(x - minContentWidth, mMaxMenuWidthDps);
 
         //update sizes and margins for sliding menu

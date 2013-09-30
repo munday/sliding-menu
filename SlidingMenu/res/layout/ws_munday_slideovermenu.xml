@@ -6,8 +6,11 @@
 
     	<FrameLayout android:id="@+id/ws_munday_slidingmenu_menu_frame"
 		    android:layout_height="fill_parent" 
-			android:layout_width="fill_parent"
-			android:background="@drawable/shadow" />
+			android:layout_width="fill_parent" />
+
+        <FrameLayout android:id="@+id/ws_munday_slidingmenu_shadow_frame"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
 
     	<FrameLayout android:id="@+id/ws_munday_slidingmenu_content_frame"
 		    android:layout_height="fill_parent" 
