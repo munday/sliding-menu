@@ -728,7 +728,7 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
         //update sizes and margins for sliding menu
         RelativeLayout.LayoutParams mp = new RelativeLayout.LayoutParams(mMenuWidth, RelativeLayout.LayoutParams.MATCH_PARENT);
         RelativeLayout.LayoutParams rp = new RelativeLayout.LayoutParams(x, RelativeLayout.LayoutParams.MATCH_PARENT);
-        RelativeLayout.LayoutParams sp = new RelativeLayout.LayoutParams(x - 30, RelativeLayout.LayoutParams.MATCH_PARENT);
+        RelativeLayout.LayoutParams sp = new RelativeLayout.LayoutParams(x - mShadowWidth, RelativeLayout.LayoutParams.MATCH_PARENT);
 
         if (isConfigChange) {
             if (mIsMenuOpen) {
