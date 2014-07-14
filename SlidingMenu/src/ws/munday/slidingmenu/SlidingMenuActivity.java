@@ -41,6 +41,7 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
     public static final int DEFAULT_ANIMATION_DURATION = 400;
     public static final int DEFAULT_MAX_MENU_WIDTH_DPS = 375;
     public static final int DEFAULT_MIN_CONTENT_WIDTH_DPS = 50;
+    public static final int MOVEMENT_MAX_JITTER = 20;
 
 
     private boolean mIsMenuOpen = false;
