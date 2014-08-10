@@ -97,6 +97,10 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
         mContentLayoutId = contentLayoutId;
     }
 
+    public void setSlideTitlebar(boolean slide) {
+        mSlideTitleBar = slide;
+    }
+
     public void setDraggingEnabled(boolean enabled){
         mDraggingEnabled = enabled;
     }
@@ -143,7 +147,7 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
      * Gets the undraggable offset from the top of the screen
      * @return the offset
      */
-    public int gerGrabberTopOffset(){
+    public int getGrabberTopOffset(){
         return mGrabberTopOffset;
     }
 
@@ -298,7 +302,6 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
 
             mnu.setPadding(mnu.getPaddingLeft(), mnu.getPaddingTop() + statusbarHeight, mnu.getPaddingRight(), mnu.getPaddingTop());
             content.addView(allContent);
-            content.setBackgroundDrawable(Utility.getThemeBackground(this));
             menu.addView(mnu);
 
             decor.addView(mRootLayout);
@@ -424,10 +427,10 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
 
                     mCurrentX = Math.min((int) motionEvent.getX(), mMenuWidth);
 
-                    if (mCurrentX < mLastX) {
+                    if (mIsMenuOpen && mCurrentX < mMenuWidth) {
                         // animate from the release point to closed
                         AnimateMenuPosition(mCurrentX, 0);
-                    } else if (mCurrentX > mLastX) {
+                    } else if (!mIsMenuOpen && mCurrentX > mLastX) {
                         // animate from the release point to opened
                         AnimateMenuPosition(mCurrentX, mMenuWidth);
                     } else {
