@@ -315,6 +315,19 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
 
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Reset the menu to closed if it was on it's way there.
+        if (!mIsMenuOpen) {
+            setMenuRightPosition(0);
+            ViewGroup content = (ViewGroup) findViewById(R.id.ws_munday_slidingmenu_content_frame);
+            content.clearAnimation();
+            ViewGroup menu = (ViewGroup) findViewById(R.id.ws_munday_slidingmenu_menu_frame);
+            menu.setVisibility(View.GONE);
+        }
+    }
+
     public void setupShadow(int width) {
         mShadowWidth = width;
         View shadowView = findViewById(R.id.ws_munday_slidingmenu_shadow_frame);
