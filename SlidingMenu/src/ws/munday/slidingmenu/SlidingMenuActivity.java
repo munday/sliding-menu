@@ -64,7 +64,7 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
     private ViewGroup mRootLayout;
 
     private boolean mMoving = false;
-    private int mOriginX = 0;
+    private int mStartX = 0;
     private int mCurrentX = 0;
     private int mLastX = 0;
 
@@ -399,46 +399,47 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
                 // the start point will either be the x coordinate or the menu width
                 final int x = (int) motionEvent.getX();
                 final int y = (int) motionEvent.getY();
-                if(y < mGrabberTopOffset) return false;
 
-                mOriginX = Math.min(x, mMenuWidth);
-                mCurrentX = mOriginX;
+                if(y < mGrabberTopOffset) {
+                    resetPositionValues();
+                    return false;
+                }
+                mCurrentX = Math.min(x, mMenuWidth);
+                mStartX = mCurrentX;
+                mLastX = mCurrentX;
 
-
-                if (mIsMenuOpen && x >= mMenuWidth - mGrabberSize && x <= mMenuWidth + mGrabberSize) {
+                if (mIsMenuOpen && x >= mMenuWidth) {
                     // if the user begins the drag on the right edge of the open menu, assume that
                     // they are grabbing to close.
                     mMoving = true;
-                } else if (!mIsMenuOpen && mOriginX <= mGrabberSize) {
+                } else if (!mIsMenuOpen && x <= mGrabberSize) {
                     // if the user begins the drag on the left edge of a closed menu, assume that
                     // they are grabbing to open.
                     mMoving = true;
                 } else {
-                    mMoving = false;
-                    return false;
+                    resetPositionValues();
                 }
 
-                return true;
+                return mMoving;
 
             case MotionEvent.ACTION_MOVE:
 
                 if (mMoving) {
-                    // keep track of the current and last positions
-                    setMenuRightPosition(mCurrentX);
+                    if (Math.abs(mCurrentX - mStartX) > MOVEMENT_MAX_JITTER) {
+                        setMenuRightPosition(mCurrentX);
+                    }
                     mLastX = mCurrentX;
-                    int nextX = (int) motionEvent.getX();
-                    mCurrentX = Math.min(nextX, mMenuWidth);
+                    mCurrentX = Math.min((int)motionEvent.getX(), mMenuWidth);
+
                     return true;
                 }
 
+                resetPositionValues();
                 return false;
 
             case MotionEvent.ACTION_UP:
 
-
                 if (mMoving) {
-
-                    mCurrentX = Math.min((int) motionEvent.getX(), mMenuWidth);
 
                     if (mIsMenuOpen && mCurrentX < mMenuWidth) {
                         // animate from the release point to closed
@@ -446,24 +447,27 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
                     } else if (!mIsMenuOpen && mCurrentX > mLastX) {
                         // animate from the release point to opened
                         AnimateMenuPosition(mCurrentX, mMenuWidth);
-                    } else {
+                    } else if (mCurrentX != mStartX) {
                         // there is no motion (the last position and current position are equal)
                         // if the move has passed 50% of the menu width, open it. Otherwise, close it.
                         AnimateMenuPosition(mCurrentX, (mCurrentX > mMenuWidth / 4 ? mMenuWidth : 0));
                     }
 
-                    mMoving = false;
-                    mOriginX = mCurrentX = 0;
-
+                    resetPositionValues();
                     return true;
                 }
 
-                mOriginX = mCurrentX = 0;
+                resetPositionValues();
 
         }
 
         return false;
 
+    }
+
+    private void resetPositionValues() {
+        mMoving = false;
+        mStartX = mLastX = mCurrentX = 0;
     }
 
     /**
