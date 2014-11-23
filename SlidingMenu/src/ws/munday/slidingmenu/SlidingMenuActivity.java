@@ -35,7 +35,7 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
     public static final int MENU_TYPE_SLIDEOVER = 2;
     public static final int MENU_TYPE_PARALLAX = 3;
 
-    public static final int DEFAULT_GRABBER_TOP_OFFSET = 150;
+    public static final int DEFAULT_GRABBER_TOP_OFFSET = 0;
     public static final int DEFAULT_GRABBER_SIZE = 75;
     public static final int DEFAULT_SHADOW_WIDTH = 25;
     public static final int DEFAULT_ANIMATION_DURATION = 400;
@@ -67,6 +67,13 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
     private int mStartX = 0;
     private int mCurrentX = 0;
     private int mLastX = 0;
+    private SlideDirection mSlideDirection = SlideDirection.NONE;
+
+    private enum SlideDirection {
+        NONE,
+        OPENING,
+        CLOSING
+    }
 
     public SlidingMenuActivity() {
         this(true);
@@ -382,9 +389,9 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
 
         boolean handled = onTouch(mRootLayout, ev);
 
-        if (!handled) handled = super.dispatchTouchEvent(ev);
+        boolean childHandled = super.dispatchTouchEvent(ev);
 
-        return handled;
+        return handled || childHandled;
 
     }
 
@@ -398,17 +405,17 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
 
                 // the start point will either be the x coordinate or the menu width
                 final int x = (int) motionEvent.getX();
-                final int y = (int) motionEvent.getY();
 
-                if(y < mGrabberTopOffset) {
-                    resetPositionValues();
-                    return false;
+                if ((motionEvent.getEdgeFlags() & MotionEvent.EDGE_LEFT) == 1) {
+                    mCurrentX = x;
+                } else {
+                    mCurrentX = mMenuWidth;
                 }
-                mCurrentX = Math.min(x, mMenuWidth);
+
                 mStartX = mCurrentX;
                 mLastX = mCurrentX;
 
-                if (mIsMenuOpen && x >= mMenuWidth) {
+                if (mIsMenuOpen && x >= mMenuWidth - mGrabberSize) {
                     // if the user begins the drag on the right edge of the open menu, assume that
                     // they are grabbing to close.
                     mMoving = true;
@@ -416,20 +423,31 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
                     // if the user begins the drag on the left edge of a closed menu, assume that
                     // they are grabbing to open.
                     mMoving = true;
-                } else {
-                    resetPositionValues();
                 }
 
                 return mMoving;
 
             case MotionEvent.ACTION_MOVE:
 
+                mLastX = mCurrentX;
+                mCurrentX = Math.min((int) motionEvent.getX(), mMenuWidth);
+
+                int difference = Math.abs(mStartX - mCurrentX);
+
+                if (difference < 5) {
+                    return false;
+                }
+
                 if (mMoving) {
                     if (Math.abs(mCurrentX - mStartX) > MOVEMENT_MAX_JITTER) {
                         setMenuRightPosition(mCurrentX);
                     }
-                    mLastX = mCurrentX;
-                    mCurrentX = Math.min((int)motionEvent.getX(), mMenuWidth);
+
+                    if (mLastX < mCurrentX) {
+                        mSlideDirection = SlideDirection.OPENING;
+                    } else if (mLastX > mCurrentX) {
+                        mSlideDirection = SlideDirection.CLOSING;
+                    }
 
                     return true;
                 }
@@ -441,24 +459,17 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
 
                 if (mMoving) {
 
-                    if (mIsMenuOpen && mCurrentX < mMenuWidth) {
+                    if (mSlideDirection == SlideDirection.CLOSING) {
                         // animate from the release point to closed
                         AnimateMenuPosition(mCurrentX, 0);
-                    } else if (!mIsMenuOpen && mCurrentX > mLastX) {
+                    } else if (mSlideDirection == SlideDirection.OPENING) {
                         // animate from the release point to opened
                         AnimateMenuPosition(mCurrentX, mMenuWidth);
-                    } else if (mCurrentX != mStartX) {
-                        // there is no motion (the last position and current position are equal)
-                        // if the move has passed 50% of the menu width, open it. Otherwise, close it.
-                        AnimateMenuPosition(mCurrentX, (mCurrentX > mMenuWidth / 4 ? mMenuWidth : 0));
                     }
-
                     resetPositionValues();
                     return true;
                 }
-
                 resetPositionValues();
-
         }
 
         return false;
@@ -468,6 +479,7 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
     private void resetPositionValues() {
         mMoving = false;
         mStartX = mLastX = mCurrentX = 0;
+        mSlideDirection = SlideDirection.NONE;
     }
 
     /**
