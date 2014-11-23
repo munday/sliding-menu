@@ -35,7 +35,6 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
     public static final int MENU_TYPE_SLIDEOVER = 2;
     public static final int MENU_TYPE_PARALLAX = 3;
 
-    public static final int DEFAULT_GRABBER_TOP_OFFSET = 0;
     public static final int DEFAULT_GRABBER_SIZE = 75;
     public static final int DEFAULT_SHADOW_WIDTH = 25;
     public static final int DEFAULT_ANIMATION_DURATION = 400;
@@ -59,7 +58,8 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
     private boolean mDraggingEnabled = false;
     private boolean mShadowEnabled = true;
     private int mGrabberSize = DEFAULT_GRABBER_SIZE;
-    private int mGrabberTopOffset = 0;
+
+    @Deprecated private int mGrabberTopOffset = 0;
 
     private ViewGroup mRootLayout;
 
@@ -87,10 +87,7 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
      */
     public SlidingMenuActivity(boolean slideTitleBar) {
         mSlideTitleBar = slideTitleBar;
-        if(slideTitleBar){
-            mGrabberTopOffset = DEFAULT_GRABBER_TOP_OFFSET;
-        }
-    }
+     }
 
     /**
      * Sets the layoutids for the menu and main content areas.
@@ -146,6 +143,7 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
      * buttons on the left side of the actionbar.
      * @param offset
      */
+    @Deprecated
     public void setGrabberTopOffset(int offset){
         mGrabberTopOffset = offset;
     }
@@ -154,6 +152,7 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
      * Gets the undraggable offset from the top of the screen
      * @return the offset
      */
+    @Deprecated
     public int getGrabberTopOffset(){
         return mGrabberTopOffset;
     }
