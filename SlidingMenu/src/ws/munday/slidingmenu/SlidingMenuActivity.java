@@ -385,13 +385,13 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-
         boolean handled = onTouch(mRootLayout, ev);
 
-        boolean childHandled = super.dispatchTouchEvent(ev);
+        if (!handled) {
+            handled = super.dispatchTouchEvent(ev);
+        }
 
-        return handled || childHandled;
-
+        return handled;
     }
 
     @Override
@@ -399,17 +399,13 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
 
         if(!mDraggingEnabled) return false;
 
-        switch (motionEvent.getAction()) {
+        switch (motionEvent.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
 
                 // the start point will either be the x coordinate or the menu width
                 final int x = (int) motionEvent.getX();
 
-                if ((motionEvent.getEdgeFlags() & MotionEvent.EDGE_LEFT) == 1) {
-                    mCurrentX = x;
-                } else {
-                    mCurrentX = mMenuWidth;
-                }
+                mCurrentX = Math.min(x, mMenuWidth);
 
                 mStartX = mCurrentX;
                 mLastX = mCurrentX;
@@ -455,6 +451,7 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
                 return false;
 
             case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_CANCEL:
 
                 if (mMoving) {
 
@@ -464,6 +461,9 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
                     } else if (mSlideDirection == SlideDirection.OPENING) {
                         // animate from the release point to opened
                         AnimateMenuPosition(mCurrentX, mMenuWidth);
+                    } else if (mCurrentX == mStartX && mIsMenuOpen) {
+                        // animate from the release point to closed
+                        AnimateMenuPosition(mCurrentX, 0);
                     }
                     resetPositionValues();
                     return true;
@@ -633,6 +633,14 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
 
         boolean parallax = menuAnimationDuration != mAnimationDuration;
 
+        // The menu width is the maximum distance that the item would have to travel
+        int maxDistance = mMenuWidth;
+        int distance = Math.abs(end -start);
+
+        float distanceRatio = distance/maxDistance;
+
+        int adjustedAnimationDuration = (int) (menuAnimationDuration * distanceRatio);
+
         View contentView = findViewById(R.id.ws_munday_slidingmenu_content_frame);
         contentView.clearAnimation();
         contentView.setDrawingCacheEnabled(true);
@@ -657,7 +665,7 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
             }
         });
 
-        contentAnimation.setDuration(mAnimationDuration);
+        contentAnimation.setDuration(adjustedAnimationDuration);
         contentView.startAnimation(contentAnimation);
 
         MarginAnimation menuAnimation;
@@ -668,10 +676,10 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
 
         menuAnimation = new MarginAnimation(menuView, start - mMenuWidth, end - mMenuWidth, mInterpolator);
         if(start > end && parallax) {
-            long multiplier = Math.max(menuAnimationDuration / mAnimationDuration, 1 );
-            menuAnimation.setDuration(menuAnimationDuration / multiplier);
+            long multiplier = Math.max(adjustedAnimationDuration / (int) (mAnimationDuration * distanceRatio), 1 );
+            menuAnimation.setDuration(adjustedAnimationDuration / multiplier);
         }else{
-            menuAnimation.setDuration(menuAnimationDuration);
+            menuAnimation.setDuration(adjustedAnimationDuration);
         }
         menuView.startAnimation(menuAnimation);
 
@@ -683,7 +691,7 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
         int shadowEnd = end - mShadowWidth;
 
         MarginAnimation shadowAnimation = new MarginAnimation(shadowView, shadowStart, shadowEnd, mInterpolator);
-        shadowAnimation.setDuration(mAnimationDuration);
+        shadowAnimation.setDuration(adjustedAnimationDuration);
         shadowView.startAnimation(shadowAnimation);
 
 
