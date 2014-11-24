@@ -635,9 +635,9 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
 
         // The menu width is the maximum distance that the item would have to travel
         int maxDistance = mMenuWidth;
-        int distance = Math.abs(end -start);
+        int distance = Math.abs(end - start);
 
-        float distanceRatio = distance/maxDistance;
+        float distanceRatio = (float)distance/(float)maxDistance;
 
         int adjustedAnimationDuration = (int) (menuAnimationDuration * distanceRatio);
 
@@ -665,7 +665,12 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
             }
         });
 
-        contentAnimation.setDuration(adjustedAnimationDuration);
+        if(start < end && parallax) {
+            long multiplier = (long)((double)mAnimationDuration / (double)menuAnimationDuration);
+            contentAnimation.setDuration(adjustedAnimationDuration * multiplier);
+        } else {
+            contentAnimation.setDuration(adjustedAnimationDuration);
+        }
         contentView.startAnimation(contentAnimation);
 
         MarginAnimation menuAnimation;
@@ -676,8 +681,8 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
 
         menuAnimation = new MarginAnimation(menuView, start - mMenuWidth, end - mMenuWidth, mInterpolator);
         if(start > end && parallax) {
-            long multiplier = Math.max(adjustedAnimationDuration / (int) (mAnimationDuration * distanceRatio), 1 );
-            menuAnimation.setDuration(adjustedAnimationDuration / multiplier);
+            long multiplier = (long)((double)mAnimationDuration / (double)menuAnimationDuration);
+            menuAnimation.setDuration(adjustedAnimationDuration * multiplier);
         }else{
             menuAnimation.setDuration(adjustedAnimationDuration);
         }
