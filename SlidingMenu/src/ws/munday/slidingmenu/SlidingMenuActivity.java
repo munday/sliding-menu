@@ -41,6 +41,7 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
     public static final int DEFAULT_MAX_MENU_WIDTH_DPS = 375;
     public static final int DEFAULT_MIN_CONTENT_WIDTH_DPS = 50;
     public static final int MOVEMENT_MAX_JITTER = 20;
+    public static final int PARALLAX_SPEED_MULTIPLIER = 2;
 
 
     private boolean mIsMenuOpen = false;
@@ -427,12 +428,6 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
                 mLastX = mCurrentX;
                 mCurrentX = Math.min((int) motionEvent.getX(), mMenuWidth);
 
-                int difference = Math.abs(mStartX - mCurrentX);
-
-                if (difference < 5) {
-                    return false;
-                }
-
                 if (mMoving) {
                     if (Math.abs(mCurrentX - mStartX) > MOVEMENT_MAX_JITTER) {
                         setMenuRightPosition(mCurrentX);
@@ -500,9 +495,15 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
         RelativeLayout.LayoutParams rp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
         RelativeLayout.LayoutParams sp = new RelativeLayout.LayoutParams(30, RelativeLayout.LayoutParams.MATCH_PARENT);
 
-        if (mType != MENU_TYPE_SLIDEOVER) {
-            mp.leftMargin = (int) right - mMenuWidth;
-            mp.rightMargin = -(int) right;
+        switch (mType) {
+            case MENU_TYPE_SLIDING:
+                mp.leftMargin = (int) right - mMenuWidth;
+                mp.rightMargin = -(int) right;
+                break;
+            case MENU_TYPE_PARALLAX:
+                mp.leftMargin = (int) calculateParallaxMenuPosition(right) - mMenuWidth;
+                mp.rightMargin = -(int) calculateParallaxMenuPosition(right);
+            default:
         }
 
         rp.rightMargin = -(int) right;
@@ -525,7 +526,7 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
                 toggleSlideOverMenu();
                 break;
             case MENU_TYPE_PARALLAX:
-                toggleSlidingMenu(mAnimationDuration / 2);
+                toggleSlidingMenu(mAnimationDuration / PARALLAX_SPEED_MULTIPLIER);
                 break;
             default: /*MENU_TYPE_SLIDING*/
                 toggleSlidingMenu();
@@ -548,7 +549,7 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
                 animateSlideOverMenuPosition(start, end);
                 break;
             case MENU_TYPE_PARALLAX:
-                animateSlidingMenuPosition(start, end, mAnimationDuration / 2);
+                animateSlidingMenuPosition(start, end, mAnimationDuration, true);
                 break;
             default: /*MENU_TYPE_SLIDING*/
                 animateSlidingMenuPosition(start, end, mAnimationDuration);
@@ -630,8 +631,18 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
      *                              then the menu is considered parralax.
      */
     public void animateSlidingMenuPosition(final int start, final int end, long menuAnimationDuration) {
+        animateSlidingMenuPosition(start, end, menuAnimationDuration, false);
+    }
 
-        boolean parallax = menuAnimationDuration != mAnimationDuration;
+    /**
+     * Animates both the menu and content areas independently.
+     *
+     * @param start
+     * @param end
+     * @param menuAnimationDuration the time in millis in which the menu animation should finish.
+     * @param parallax whether or not the anamation should have a parallax effect.
+     */
+    public void animateSlidingMenuPosition(final int start, final int end, long menuAnimationDuration, boolean parallax) {
 
         // The menu width is the maximum distance that the item would have to travel
         int maxDistance = mMenuWidth;
@@ -665,12 +676,7 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
             }
         });
 
-        if(start < end && parallax) {
-            long multiplier = (long)((double)mAnimationDuration / (double)menuAnimationDuration);
-            contentAnimation.setDuration(adjustedAnimationDuration * multiplier);
-        } else {
-            contentAnimation.setDuration(adjustedAnimationDuration);
-        }
+        contentAnimation.setDuration(adjustedAnimationDuration);
         contentView.startAnimation(contentAnimation);
 
         MarginAnimation menuAnimation;
@@ -679,14 +685,29 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
         menuView.setDrawingCacheEnabled(true);
 
 
-        menuAnimation = new MarginAnimation(menuView, start - mMenuWidth, end - mMenuWidth, mInterpolator);
-        if(start > end && parallax) {
-            long multiplier = (long)((double)mAnimationDuration / (double)menuAnimationDuration);
-            menuAnimation.setDuration(adjustedAnimationDuration * multiplier);
+        menuAnimation = new MarginAnimation(menuView, menuView.getLeft(), end - mMenuWidth, mInterpolator);
+
+        if(parallax) {
+            switch (mSlideDirection) {
+                case OPENING:
+                    menuAnimation.setDuration(Math.round(adjustedAnimationDuration / PARALLAX_SPEED_MULTIPLIER));
+                    break;
+                case CLOSING:
+                    menuAnimation.setDuration(Math.round(adjustedAnimationDuration * PARALLAX_SPEED_MULTIPLIER));
+                    break;
+                case NONE:
+                    if (mIsMenuOpen) {
+                        menuAnimation.setDuration(Math.round(adjustedAnimationDuration * PARALLAX_SPEED_MULTIPLIER));
+                    } else {
+                        menuAnimation.setDuration(Math.round(adjustedAnimationDuration / PARALLAX_SPEED_MULTIPLIER));
+                    }
+                    break;
+            }
+            menuView.startAnimation(menuAnimation);
         }else{
             menuAnimation.setDuration(adjustedAnimationDuration);
+            menuView.startAnimation(menuAnimation);
         }
-        menuView.startAnimation(menuAnimation);
 
         View shadowView = findViewById(R.id.ws_munday_slidingmenu_shadow_frame);
         shadowView.clearAnimation();
@@ -699,8 +720,40 @@ public class SlidingMenuActivity extends FragmentActivity implements View.OnTouc
         shadowAnimation.setDuration(adjustedAnimationDuration);
         shadowView.startAnimation(shadowAnimation);
 
-
         mIsMenuOpen = start <= end;
+    }
+
+    private float calculateParallaxMenuPosition(float right) {
+        switch (mSlideDirection) {
+            case OPENING:
+            case CLOSING:
+                return calculateParallaxMenuPosition(right, mSlideDirection);
+            default:
+                if (mIsMenuOpen) {
+                    return calculateParallaxMenuPosition(right, SlideDirection.CLOSING);
+                } else {
+                    return calculateParallaxMenuPosition(right, SlideDirection.OPENING);
+                }
+        }
+    }
+
+    private float calculateParallaxMenuPosition(float right, SlideDirection direction) {
+        float position = 0;
+        float openRatio = right / mMenuWidth;
+        float parallaxOpenRatio;
+        switch (direction) {
+            case OPENING:
+                parallaxOpenRatio = openRatio * PARALLAX_SPEED_MULTIPLIER;
+                position = right + right * parallaxOpenRatio;
+                position = Math.min(position, mMenuWidth);
+                break;
+            case CLOSING:
+                parallaxOpenRatio = openRatio / PARALLAX_SPEED_MULTIPLIER;
+                position = right + right * parallaxOpenRatio;
+                position = Math.min(position, mMenuWidth);
+                break;
+        }
+        return position;
     }
 
     /**
